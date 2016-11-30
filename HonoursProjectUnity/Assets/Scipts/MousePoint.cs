@@ -43,8 +43,46 @@ public class MousePoint : MonoBehaviour
 					GameObject targetObj = Instantiate(target, hit.point, Quaternion.identity) as GameObject;
 					targetObj.name = "target";
 				}
+				else if(Input.GetMouseButtonDown(0) && DidUserLeftClick(mouseDownPoint))
+				{
+					DeselectGameObject();
+				}
+			}
+			else
+			{
+				if(Input.GetMouseButtonDown(0) && DidUserLeftClick(mouseDownPoint))
+				{
+					if(hit.collider.transform.FindChild("Selected"))
+					{
+						if(currentlySelectedUnit != hit.collider.gameObject)
+						{
+							Debug.Log ("Unit found");
+							GameObject selectedObj = hit.collider.transform.FindChild("Selected").gameObject;
+							selectedObj.SetActive(true);
+
+							if(currentlySelectedUnit != null)
+							{
+								currentlySelectedUnit.transform.FindChild("Selected").gameObject.SetActive(false);
+							}
+
+							currentlySelectedUnit = hit.collider.gameObject;
+						}
+					}
+					else
+					{
+						DeselectGameObject();
+					}
+				}
 			}
 		}
+		else
+		{
+			if(Input.GetMouseButtonDown(0) && DidUserLeftClick(mouseDownPoint))
+			{
+				DeselectGameObject();
+			}
+		}
+
 		Debug.DrawRay (ray.origin, ray.direction * 1000 , Color.red);
 	}
 
