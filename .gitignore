@@ -30,13 +30,13 @@
 *.sln
 *.csproj
 *.unityproj
-Sugaropolis/Library/
-Sugaropolis/Temp/
-Sugaropolis/obj/
-Sugaropolis/Assets/Wwise/
-Sugaropolis/WWISE_TEST/
+HonoursProjectUnity/Library/
+HonoursProjectUnity/Temp/
+HonoursProjectUnity/obj/
+HonoursProjectUnity/Assets/Wwise/
+HonoursProjectUnity/WWISE_TEST/
 FTE_Sugaropolis/.backup/2016-07-22.23h04m42s/States/Default Work Unit.wwu
 FTE_Sugaropolis/.backup/
 Sugaropolis/FTE_Sugaropolis/.backup/
 Sugaropolis/FTE_Sugaropolis/.cache/
-Sugaropolis/Assets/XInputDotNet/
+HonoursProjectUnity/Assets/XInputDotNet/
