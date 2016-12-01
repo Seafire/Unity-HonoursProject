@@ -45,7 +45,6 @@ public class WorldCamera : MonoBehaviour
 		if(CheckIfUserCameraInput())
 		{
 			Vector3 cameraDesiredMove = GetDesiredTranlation();
-			Debug.Log (cameraDesiredMove);
 			if(!isDesiredPositionOverBoundaries(cameraDesiredMove))
 			{
 				this.transform.Translate(cameraDesiredMove);
@@ -133,8 +132,6 @@ public class WorldCamera : MonoBehaviour
 			overBoundaries = true;
 
 		overBoundaries = false;
-
-		Debug.Log (overBoundaries);
 
 		return overBoundaries;
 	}
