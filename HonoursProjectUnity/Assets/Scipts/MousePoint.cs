@@ -7,7 +7,6 @@ public class MousePoint : MonoBehaviour
 	RaycastHit hit;
 
 	public static ArrayList currentlySelectedUnits = new ArrayList(); // Of GameObject
-
 	public static ArrayList unitsOnScreen = new ArrayList (); // Of GameObject
 	public static ArrayList unitsInDrag = new ArrayList (); // Of GameObject
 	private bool finishDragOnFrame;
@@ -18,7 +17,6 @@ public class MousePoint : MonoBehaviour
 	public Camera camera_;
 	
 	private Vector3 mouseDownPoint;
-	private Vector3 mouseUpPoint;
 	private Vector3 mouseCurPoint;
 
 	public static bool isUserDragging;
@@ -32,8 +30,8 @@ public class MousePoint : MonoBehaviour
 	private float boxHeight;
 	private float boxLeft;
 	private float boxTop;
-	private Vector2 boxStart;
-	private Vector2 boxFinish;
+	private static Vector2 boxStart;
+	private static Vector2 boxFinish;
 
 	public GameObject target;
 
@@ -87,8 +85,8 @@ public class MousePoint : MonoBehaviour
 			}
 			else if (Input.GetMouseButtonUp (0))
 			{
-				//if(isUserDragging)
-				//	Debug.Log("User is dragging");
+				if(isUserDragging)
+					finishDragOnFrame = true;
 				
 				timeLeft = 0.0f;
 				isUserDragging = false;
@@ -200,8 +198,48 @@ public class MousePoint : MonoBehaviour
 
 	void LateUpdate()
 	{
-		Debug.Log (unitsOnScreen.Count);
+		unitsInDrag.Clear ();
+		// If user is dragging or finished on this frame and there are units to select on the screen
+		if ((isUserDragging || finishDragOnFrame) && unitsOnScreen.Count > 0)
+		{
+			// Loop through those units on screen
+			for (int i = 0; i < unitsOnScreen.Count; i++)
+			{
+				GameObject unitObj = unitsOnScreen[i] as GameObject;
+				Unit unitScript = unitObj.GetComponent<Unit>();
+				GameObject selectedObj = unitObj.transform.FindChild("Selected").gameObject;
+
+				// If not already in dragged units
+				if (!UnitAlreadyInDraggedUnits(unitObj))
+				{
+					if(UnitInsideDrag(unitScript.screenPos))
+					{
+						selectedObj.SetActive(true);
+						unitsInDrag.Add (unitObj);
+						Debug.Log ("Should be selecting");
+					}
+					// Unit is not in drag
+					else
+					{
+						// Remove the selected graphic id unit is not already selected
+						if (!UnitAlreadySelected(unitObj))
+						{
+							selectedObj.SetActive(false);
+						}
+					}
+				}
+			}
+		}
+
+		if (finishDragOnFrame)
+		{
+			finishDragOnFrame = false;
+			PutDraggedUnitsInCurrentlySelectedUnits();
+		}
 	}
+
+
+
 
 
 
@@ -292,6 +330,7 @@ public class MousePoint : MonoBehaviour
 			{
 				GameObject ArrayListUnits = currentlySelectedUnits[i] as GameObject;
 				ArrayListUnits.transform.FindChild("Selected").gameObject.SetActive(false);
+				ArrayListUnits.GetComponent<Unit>().isSelected = false;
 			}
 			currentlySelectedUnits.Clear();
 		}
@@ -343,4 +382,59 @@ public class MousePoint : MonoBehaviour
 			return false;
 	}
 
+	// IsUnitInside Drag
+	public static bool UnitInsideDrag(Vector2 unitScreenPos)
+	{
+		if (
+			(unitScreenPos.x > boxStart.x && unitScreenPos.y < boxStart.y) && 
+		    (unitScreenPos.x < boxFinish.x && unitScreenPos.y > boxFinish.y)
+		    )
+		{
+			return true;
+		} 
+		else
+			return false;
+	}
+
+	// Check if unit is already in unit in drag list
+	public static bool UnitAlreadyInDraggedUnits(GameObject unit)
+	{
+		if (unitsInDrag.Count > 0)
+		{
+			for (int i = 0; i < unitsInDrag.Count; i++) 
+			{
+				GameObject ArrayListUnits = unitsInDrag [i] as GameObject;
+				if (ArrayListUnits == unit) 
+				{
+					return true;
+				}
+				
+				return false;
+			}
+		}
+		return false;
+	}
+
+	// Take all units from UnitsInDrag, into currently selected units
+	public static void PutDraggedUnitsInCurrentlySelectedUnits()
+	{
+		if (!ShiftKeysDown())
+			DeselectGameObjects ();
+
+		if (unitsInDrag.Count > 0) 
+		{
+			for (int i = 0; i < unitsInDrag.Count; i++)
+			{
+				GameObject unitObj = unitsInDrag[i] as GameObject;
+
+				// If the unit is not already in CurrentlySelectedUnits, add it!
+				if (!UnitAlreadySelected(unitObj))
+				{
+					currentlySelectedUnits.Add (unitObj);
+					unitObj.GetComponent<Unit>().isSelected = true;
+				}
+			}
+			unitsInDrag.Clear();
+		}
+	}
 }
