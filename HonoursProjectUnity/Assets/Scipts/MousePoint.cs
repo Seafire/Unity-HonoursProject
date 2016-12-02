@@ -10,6 +10,7 @@ public class MousePoint : MonoBehaviour
 	public static ArrayList unitsOnScreen = new ArrayList (); // Of GameObject
 	public static ArrayList unitsInDrag = new ArrayList (); // Of GameObject
 	private bool finishDragOnFrame;
+	private bool startedDrag;
 
 
 	public GUIStyle mouseDragSkin;
@@ -65,6 +66,7 @@ public class MousePoint : MonoBehaviour
 			{
 				timeLeft = timeLimit;
 				mouseDragStart = Input.mousePosition;
+				startedDrag = true;
 			}
 			else if (Input.GetMouseButton (0))
 			{
@@ -87,8 +89,7 @@ public class MousePoint : MonoBehaviour
 			{
 				if(isUserDragging)
 					finishDragOnFrame = true;
-				
-				timeLeft = 0.0f;
+
 				isUserDragging = false;
 				
 				Debug.Log (isUserDragging);
@@ -105,22 +106,22 @@ public class MousePoint : MonoBehaviour
 						GameObject targetObj = Instantiate(target, hit.point, Quaternion.identity) as GameObject;
 						targetObj.name = "target";
 					}
-					else if(Input.GetMouseButtonDown(0) && DidUserLeftClick(mouseDownPoint))
+					else if(Input.GetMouseButtonUp(0) && DidUserLeftClick(mouseDownPoint))
 					{
-						if(!ShiftKeysDown())
+						if(!Common.ShiftKeysDown())
 							DeselectGameObjects();
 					}
 				}
 				else
 				{
-					if(Input.GetMouseButtonDown(0) && DidUserLeftClick(mouseDownPoint))
+					if(Input.GetMouseButtonUp(0) && DidUserLeftClick(mouseDownPoint))
 					{
-						if(hit.collider.transform.FindChild("Selected"))
+						if(hit.collider.gameObject.GetComponent<Unit>())
 						{
 							if(!UnitAlreadySelected(hit.collider.gameObject))
 							{
 								// If shif key is not down
-								if(!ShiftKeysDown())
+								if(!Common.ShiftKeysDown())
 								{
 									DeselectGameObjects();
 								}
@@ -132,7 +133,7 @@ public class MousePoint : MonoBehaviour
 							}
 							else
 							{
-								if(ShiftKeysDown())
+								if(Common.ShiftKeysDown())
 								{
 									RemoveUnitFromArray(hit.collider.gameObject);
 									GameObject selectObj = hit.collider.transform.FindChild("Selected").gameObject;
@@ -147,23 +148,27 @@ public class MousePoint : MonoBehaviour
 							}
 						}
 						else
-							if(!ShiftKeysDown())
+							if(!Common.ShiftKeysDown())
 								DeselectGameObjects();
 					}
 				}
 			}
 			else
 			{
-				if(Input.GetMouseButtonDown(0) && DidUserLeftClick(mouseDownPoint))
+				if(Input.GetMouseButtonUp(0) && DidUserLeftClick(mouseDownPoint))
 				{
-					if(!ShiftKeysDown())
+					if(!Common.ShiftKeysDown())
 						DeselectGameObjects();
 				}
 			}
 		}
 		else
 		{
-
+			if (!Common.ShiftKeysDown() && startedDrag && isUserDragging)
+			{
+				DeselectGameObjects();
+				startedDrag = false;
+			}
 		}
 
 		Debug.DrawRay (ray.origin, ray.direction * 1000 , Color.red);
@@ -172,23 +177,23 @@ public class MousePoint : MonoBehaviour
 		if (isUserDragging) 
 		{
 			// GUI Variables
-			boxWidth = camera_.WorldToScreenPoint(mouseDownPoint).x - camera_.WorldToScreenPoint(mouseCurPoint).x;
-			boxHeight = camera_.WorldToScreenPoint(mouseDownPoint).y - camera_.WorldToScreenPoint(mouseCurPoint).y;
+			boxWidth = Camera.main.WorldToScreenPoint(mouseDownPoint).x - Camera.main.WorldToScreenPoint(mouseCurPoint).x;
+			boxHeight = Camera.main.WorldToScreenPoint(mouseDownPoint).y - Camera.main.WorldToScreenPoint(mouseCurPoint).y;
 			boxLeft = Input.mousePosition.x;
 			boxTop = (Screen.height - Input.mousePosition.y) - boxHeight;
 
-			if(FloatToBool(boxWidth))
-				if(FloatToBool(boxHeight))
+			if(Common.FloatToBool(boxWidth))
+				if(Common.FloatToBool(boxHeight))
 					boxStart = new Vector2(Input.mousePosition.x, Input.mousePosition.y + boxHeight);
-			else if(!FloatToBool(boxHeight))
+			else if(!Common.FloatToBool(boxHeight))
 				boxStart = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-			else if(!FloatToBool(boxWidth)) 
-				if(FloatToBool(boxHeight))
+			else if(!Common.FloatToBool(boxWidth)) 
+				if(Common.FloatToBool(boxHeight))
 					boxStart = new Vector2(Input.mousePosition.x + boxWidth, Input.mousePosition.y + boxHeight);
-			else if (!FloatToBool(boxHeight))
+			else if (!Common.FloatToBool(boxHeight))
 				boxStart = new Vector2(Input.mousePosition.x + boxWidth, Input.mousePosition.y);
 
-			boxFinish = new Vector2 (boxStart.x + Unsigned(boxWidth), boxStart.y - Unsigned (boxHeight));
+			boxFinish = new Vector2 (boxStart.x + Common.Unsigned(boxWidth), boxStart.y - Common.Unsigned (boxHeight));
 
 			Debug.Log (boxStart + ", " + boxFinish);
 		}
@@ -272,30 +277,10 @@ public class MousePoint : MonoBehaviour
 	}
 
 
-	public static bool FloatToBool(float val)
-	{
-		if (val < 0)
-			return false;
-		else
-			return true;
-	}
-
 	void OnGUI()
 	{
 		if (isUserDragging)
-		{
 			GUI.Box (new Rect (boxLeft, boxTop, boxWidth, boxHeight), "", mouseDragSkin);
-		}
-	}
-
-	public static float Unsigned(float val)
-	{
-		if (val < 0)
-		{
-			val *= -1;
-		}
-
-		return val;
 	}
 
 	public bool UserDragging(Vector2 startPoint, Vector2 newPoint)
@@ -373,15 +358,7 @@ public class MousePoint : MonoBehaviour
 		else
 			return;
 	}
-
-	public static bool ShiftKeysDown()
-	{
-		if (Input.GetKey (KeyCode.LeftShift) || Input.GetKey (KeyCode.RightShift))
-			return true;
-		else
-			return false;
-	}
-
+	
 	// IsUnitInside Drag
 	public static bool UnitInsideDrag(Vector2 unitScreenPos)
 	{
@@ -418,9 +395,6 @@ public class MousePoint : MonoBehaviour
 	// Take all units from UnitsInDrag, into currently selected units
 	public static void PutDraggedUnitsInCurrentlySelectedUnits()
 	{
-		if (!ShiftKeysDown())
-			DeselectGameObjects ();
-
 		if (unitsInDrag.Count > 0) 
 		{
 			for (int i = 0; i < unitsInDrag.Count; i++)
