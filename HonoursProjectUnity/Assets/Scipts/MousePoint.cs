@@ -19,6 +19,7 @@ public class MousePoint : MonoBehaviour
 	
 	private Vector3 mouseDownPoint;
 	private Vector3 mouseCurPoint;
+	public Vector3 rightClickPoint;
 
 	public static bool isUserDragging;
 	private static float timeLimit = 1.0f;
