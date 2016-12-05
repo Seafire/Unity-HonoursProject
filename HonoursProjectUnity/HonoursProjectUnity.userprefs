@@ -1,17 +1,15 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scipts\Pathfinding\PathRequestManager.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scipts\AI-StateMachine\PatrolState.cs">
     <Files>
-      <File FileName="Assets\Scipts\Pathfinding\PathRequestManager.cs" Line="53" Column="2" />
-      <File FileName="Assets\Scipts\Pathfinding\Heap.cs" Line="2" Column="1" />
-      <File FileName="Assets\Scipts\Pathfinding\Pathfinding.cs" Line="56" Column="31" />
-      <File FileName="Assets\Scipts\AStarPath.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scipts\MousePoint.cs" Line="318" Column="1" />
-      <File FileName="Assets\Scipts\DestroyGameObject.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scipts\Camera\WorldCamera.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scipts\Unit.cs" Line="16" Column="18" />
-      <File FileName="Assets\Scipts\Pathfinding\Node.cs" Line="49" Column="3" />
-      <File FileName="Assets\Scipts\Pathfinding\Grid.cs" Line="83" Column="2" />
+      <File FileName="Assets\Scipts\AI-StateMachine\EngageState.cs" Line="54" Column="56" />
+      <File FileName="Assets\Scipts\AI-StateMachine\AttackState.cs" Line="58" Column="53" />
+      <File FileName="Assets\Scipts\AI-StateMachine\IEnemyState.cs" Line="15" Column="20" />
+      <File FileName="Assets\Scipts\AI-StateMachine\StatePatternEnemy.cs" Line="26" Column="3" />
+      <File FileName="Assets\Scipts\AI-StateMachine\PatrolState.cs" Line="53" Column="55" />
+      <File FileName="Assets\Scipts\MousePoint.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scipts\Unit.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scipts\Pathfinding\Heap.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
