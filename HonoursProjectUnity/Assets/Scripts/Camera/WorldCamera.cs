@@ -17,6 +17,9 @@ public class WorldCamera : MonoBehaviour
 	public static BoxLimit mouseScrollLimits = new BoxLimit();
 	public static WorldCamera instance;
 
+	public GameObject mainCamera;
+	private GameObject scrollAngle;
+
 	private float cameraMoveSpeed = 60.0f;
 	private float shiftBonus = 45.0f;
 	private float mouseBoundary = 25.0f;
@@ -56,11 +59,14 @@ public class WorldCamera : MonoBehaviour
 		mouseScrollLimits.bottomLimit = mouseBoundary;
 
 		cameraHeight = transform.position.y;
+		scrollAngle = new GameObject();
 	}
 
 	void LateUpdate()
 	{
 		HandleMouseRotation ();
+
+		ApplyScroll ();
 
 		if(CheckIfUserCameraInput())
 		{
@@ -79,6 +85,53 @@ public class WorldCamera : MonoBehaviour
 
 		mouseX = Input.mousePosition.x;
 		mouseY = Input.mousePosition.y;
+	}
+
+	void ApplyScroll()
+	{
+		float deadZone = 0.1f;
+		float easeFactor = 20.0f;
+
+		float scrollWheelValue = Input.GetAxis ("Mouse ScrollWheel") * -easeFactor;
+
+		// Check deadzone
+		if (scrollWheelValue > -deadZone && scrollWheelValue < deadZone || scrollWheelValue == 0)
+			return;
+
+		float eularAngleX = mainCamera.transform.localEulerAngles.x;
+
+		// Configure the ScreenAngle gameObject
+		scrollAngle.transform.position = transform.position;
+		scrollAngle.transform.eulerAngles = new Vector3 (eularAngleX, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
+		scrollAngle.transform.Translate (Vector3.back * scrollWheelValue);
+
+		Vector3 desiredScrollPosition = scrollAngle.transform.position;
+
+		// Check if in boundaries
+		if (desiredScrollPosition.x < cameraLimits.leftLimit || desiredScrollPosition.x > cameraLimits.rightLimit)
+			return;
+		if (desiredScrollPosition.z < cameraLimits.topLimit || desiredScrollPosition.z > cameraLimits.bottomLimit)
+			return;
+
+		if (desiredScrollPosition.y > maxCameraHeight)
+			return;
+
+		if (desiredScrollPosition.y < 20.0f)
+			return;
+
+
+		Debug.Log (maxCameraHeight);
+
+		// Update the camera height and cameraY
+		float heightDif = desiredScrollPosition.y - this.transform.position.y;
+		cameraHeight += heightDif;
+		cameraY = desiredScrollPosition.y;
+
+		// Update the camera Position
+		this.transform.position = desiredScrollPosition;
+
+		return;
+
 	}
 
 	// Calculates the camera heigh to the terrain height
