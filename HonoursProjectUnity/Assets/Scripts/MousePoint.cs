@@ -6,12 +6,12 @@ public class MousePoint : MonoBehaviour
 {
 	RaycastHit hit;
 
+	public static Vector3 RightMouseClick;
 	public static ArrayList currentlySelectedUnits = new ArrayList(); // Of GameObject
 	public static ArrayList unitsOnScreen = new ArrayList (); // Of GameObject
 	public static ArrayList unitsInDrag = new ArrayList (); // Of GameObject
 	private bool finishDragOnFrame;
 	private bool startedDrag;
-
 
 	public GUIStyle mouseDragSkin;
 
@@ -106,6 +106,7 @@ public class MousePoint : MonoBehaviour
 					{
 						GameObject targetObj = Instantiate(target, hit.point, Quaternion.identity) as GameObject;
 						targetObj.name = "target";
+						RightMouseClick = hit.point;
 					}
 					else if(Input.GetMouseButtonUp(0) && DidUserLeftClick(mouseDownPoint))
 					{
@@ -130,6 +131,9 @@ public class MousePoint : MonoBehaviour
 								currentlySelectedUnits.Add(hit.collider.gameObject);
 								GameObject selectObj = hit.collider.transform.FindChild("Selected").gameObject;
 								selectObj.SetActive(true);
+
+								// Change the unit Selected value to true
+								hit.collider.gameObject.GetComponent<Unit>().isSelected  =true;
 							
 							}
 							else

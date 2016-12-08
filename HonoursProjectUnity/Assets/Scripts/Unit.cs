@@ -11,6 +11,8 @@ public class Unit : MonoBehaviour
 	public Vector2 screenPos;
 	public bool isOnScreen;
 	public bool isSelected = false;
+	
+	public bool isWalkable = true;
 
 	public Transform target;
 	float speed = 10;
@@ -19,7 +21,6 @@ public class Unit : MonoBehaviour
 
 	void Start()
 	{
-		PathRequestManager.RequestPath (transform.position, target.position, OnPathFound);
 	}
 
 	public void OnPathFound(Vector3[] newPath, bool success)
@@ -27,6 +28,7 @@ public class Unit : MonoBehaviour
 		if (success) 
 		{
 			path = newPath;
+			targetIndex = 0;
 			StopCoroutine("FollowPath");
 			StartCoroutine("FollowPath");
 		}
@@ -48,7 +50,6 @@ public class Unit : MonoBehaviour
 				currentWaypoint = path[targetIndex];
 			}
 			transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
-
 			yield return null;
 		}
 	}
@@ -101,6 +102,19 @@ public class Unit : MonoBehaviour
 				{
 					MousePoint.RemoveFromOnScreenUnits(this.gameObject);
 				}
+			}
+		}
+
+	}
+
+	void LateUpdate()
+	{
+		if (isSelected) 
+		{
+			if (Input.GetMouseButtonDown(1))
+			{
+				PathRequestManager.RequestPath (transform.position, MousePoint.RightMouseClick, OnPathFound);
+				
 			}
 		}
 	}
