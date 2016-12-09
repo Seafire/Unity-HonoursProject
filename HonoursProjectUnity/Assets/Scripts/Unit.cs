@@ -111,7 +111,7 @@ public class Unit : MonoBehaviour
 	{
 		if (isSelected) 
 		{
-			if (Input.GetMouseButtonDown(1))
+			if (Input.GetMouseButtonDown(1) && !Input.GetKey(KeyCode.LeftControl))
 			{
 				PathRequestManager.RequestPath (transform.position, MousePoint.RightMouseClick, OnPathFound);
 				

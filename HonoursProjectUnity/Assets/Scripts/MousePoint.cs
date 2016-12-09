@@ -102,7 +102,7 @@ public class MousePoint : MonoBehaviour
 
 				if (hit.collider.name == "Plane")
 				{
-					if (Input.GetMouseButtonDown(1))
+					if (Input.GetMouseButtonDown(1) && !Input.GetKey(KeyCode.LeftControl))
 					{
 						GameObject targetObj = Instantiate(target, hit.point, Quaternion.identity) as GameObject;
 						targetObj.name = "target";
