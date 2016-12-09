@@ -42,12 +42,12 @@ public class Node : IHeapItem<Node>
 		}
 	}
 	
-	public int CompareTo(Node nodeToCompare) 
+	public int CompareTo(Node _nodeToCompare) 
 	{
-		int compare = fCost.CompareTo(nodeToCompare.fCost);
+		int compare = fCost.CompareTo(_nodeToCompare.fCost);
 		if (compare == 0) 
 		{
-			compare = hCost.CompareTo(nodeToCompare.hCost);
+			compare = hCost.CompareTo(_nodeToCompare.hCost);
 		}
 		return -compare;
 	}

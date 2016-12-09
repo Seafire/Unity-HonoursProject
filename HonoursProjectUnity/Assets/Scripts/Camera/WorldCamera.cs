@@ -3,8 +3,9 @@ using System.Collections;
 
 public class WorldCamera : MonoBehaviour 
 {
-	public LayerMask groundLayer;
+	public LayerMask groundLayer;									/* What the ray will detect as the ground */ 
 
+	/* Limit for camera and mouse */
 	public struct BoxLimit
 	{
 		public float leftLimit;
@@ -13,76 +14,81 @@ public class WorldCamera : MonoBehaviour
 		public float bottomLimit;
 	}
 
-	public static BoxLimit cameraLimits = new BoxLimit();
-	public static BoxLimit mouseScrollLimits = new BoxLimit();
-	public static WorldCamera instance;
+	public static BoxLimit cameraLimits = new BoxLimit();			/* Used to stop camera going off the map */
+	public static BoxLimit mouseScrollLimits = new BoxLimit();		/* Used for the height ajustment */
+	public static WorldCamera instance;								/* Refernce to the camera */
 
-	public GameObject mainCamera;
-	private GameObject scrollAngle;
+	public GameObject mainCamera;									/* Reference to the current instance */
+	private GameObject scrollAngle;									/* Used as a local gameobject to allow zooming */
 
-	private float cameraMoveSpeed = 60.0f;
-	private float shiftBonus = 45.0f;
-	private float mouseBoundary = 25.0f;
+	private float cameraMoveSpeed = 60.0f;							/* Private variable for the camera movement speed */
+	private float shiftBonus = 45.0f;								/* Increase to camera movement is shift is pressed */
+	private float mouseBoundary = 25.0f;							/* Distance at the edge of the screen to allow the camera to move */
 
-	private float mouseX, mouseY;
+	private float mouseX, mouseY;									/* current mouse position */
 
-	private bool verticalRotationEnabled = true;
-	private float verticalRotationMin = 0.0f;	// In degrees
-	private float verticalRotationMax = 65.0f;	// In degrees
+	private bool verticalRotationEnabled = true;					/* Option to stop the camera rotating vertical */
+	private float verticalRotationMin = 0.0f;	// In degrees		/* Minimum bounds for the camera vertical rotation */
+	private float verticalRotationMax = 65.0f;	// In degrees		/* Maximum bounds for the camera vertical rotation */
 
-	public Terrain worldTerrain;
-	public float worldTerrainPadding = 25.0f;
+	public Terrain worldTerrain;									/* Access to the terrain */
+	public float worldTerrainPadding = 25.0f;						/* Distance to stop the camera from edge of terrain */
 
 	[HideInInspector]
-	public float cameraHeight;
+	public float cameraHeight;										/* Current camera height */
 	[HideInInspector]
-	public float cameraY;
-	public float maxCameraHeight = 80.0f;
-
-
-
+	public float cameraY;											/* Camera change in y Axis */ 
+	public float maxCameraHeight = 80.0f;							/* Max distance the camera can zoom out */
+	
 	void Awake()
 	{
+		// Set the instance
 		instance = this;
 	}
 
 	void Start()
 	{
+		// Set up camera limits
 		cameraLimits.leftLimit = worldTerrain.transform.position.x + worldTerrainPadding;
 		cameraLimits.rightLimit = worldTerrain.terrainData.size.x - worldTerrainPadding;
 		cameraLimits.topLimit = worldTerrain.transform.position.z + worldTerrainPadding;
 		cameraLimits.bottomLimit = worldTerrain.terrainData.size.z - worldTerrainPadding;
-
+		// Set up mouse limits
 		mouseScrollLimits.leftLimit = mouseBoundary;
 		mouseScrollLimits.rightLimit = mouseBoundary;
 		mouseScrollLimits.topLimit = mouseBoundary;
 		mouseScrollLimits.bottomLimit = mouseBoundary;
-
+		//Initialize the camera height
 		cameraHeight = transform.position.y;
+		// Initialize as new empty gameobject
 		scrollAngle = new GameObject();
 	}
 
 	void LateUpdate()
 	{
+		// Controls the camera rotation with the mouse
 		HandleMouseRotation ();
-
+		// Controls the scrolling of the camera
 		ApplyScroll ();
-
+		// If the user has interacted with the scene through input
 		if(CheckIfUserCameraInput())
 		{
+			// Calculate the desired movement
 			Vector3 desiredTranlation = GetDesiredTranlation();
+			// If the desired move is within the scene limits
 			if(!isDesiredPositionOverBoundaries(desiredTranlation))
 			{
+				// Update the controller position to the new location
 				Vector3 desiredPosition = transform.position + desiredTranlation;
-
+				// Update the camera Y position
 				UpdateCameraY (desiredPosition);
-
+				// Trandform the camera controller to the new location
 				this.transform.Translate(desiredTranlation);
 			}
 		}
-
+		// Applies the camera scroll
 		ApplyCameraY ();
-
+		// Set the current position of the mouse
 		mouseX = Input.mousePosition.x;
 		mouseY = Input.mousePosition.y;
 	}
@@ -91,13 +97,13 @@ public class WorldCamera : MonoBehaviour
 	{
 		float deadZone = 0.1f;
 		float easeFactor = 20.0f;
-
+		// Set local variable to the input value of scroll wheel
 		float scrollWheelValue = Input.GetAxis ("Mouse ScrollWheel") * -easeFactor;
 
 		// Check deadzone
 		if (scrollWheelValue > -deadZone && scrollWheelValue < deadZone || scrollWheelValue == 0)
 			return;
-
+		// Set value to the current x Angle on the main camera
 		float eularAngleX = mainCamera.transform.localEulerAngles.x;
 
 		// Configure the ScreenAngle gameObject
@@ -105,6 +111,7 @@ public class WorldCamera : MonoBehaviour
 		scrollAngle.transform.eulerAngles = new Vector3 (eularAngleX, this.transform.eulerAngles.y, this.transform.eulerAngles.z);
 		scrollAngle.transform.Translate (Vector3.back * scrollWheelValue);
 
+		// Set local varaible to the newly create gameonject in order to apply it to the camera
 		Vector3 desiredScrollPosition = scrollAngle.transform.position;
 
 		// Check if in boundaries
@@ -112,15 +119,12 @@ public class WorldCamera : MonoBehaviour
 			return;
 		if (desiredScrollPosition.z < cameraLimits.topLimit || desiredScrollPosition.z > cameraLimits.bottomLimit)
 			return;
-
+		// Check height of camera
 		if (desiredScrollPosition.y > maxCameraHeight)
 			return;
 
 		if (desiredScrollPosition.y < 20.0f)
 			return;
-
-
-		Debug.Log (maxCameraHeight);
 
 		// Update the camera height and cameraY
 		float heightDif = desiredScrollPosition.y - this.transform.position.y;
@@ -137,9 +141,11 @@ public class WorldCamera : MonoBehaviour
 	// Calculates the camera heigh to the terrain height
 	public void UpdateCameraY (Vector3 desiredPosition)
 	{
+		// Declare local variables
 		RaycastHit hit;
 		float deadZone = 0.01f;
 
+		// If the Ray collides with anything
 		if (Physics.Raycast(desiredPosition, Vector3.down, out hit, Mathf.Infinity))
 		{
 			float newHeight = cameraHeight + hit.point.y;
@@ -168,14 +174,13 @@ public class WorldCamera : MonoBehaviour
 		float smoothTime = 0.2f;
 		float vel = 0.0f;
 
+		// Calculate the movement in the Y direction with a Damp applied
 		float newPosY = Mathf.SmoothDamp (transform.position.y, cameraY, ref vel, smoothTime);
 
+		// If the new camera y position is less than the max camera height
 		if (newPosY < maxCameraHeight)
-		{
-			Debug.Log ("Update the camera height now");
+			// Update the camera position in the Y axis
 			transform.position = new Vector3 (transform.position.x, newPosY, transform.position.z);
-		}
-
 		return;
 	}
 
@@ -183,23 +188,25 @@ public class WorldCamera : MonoBehaviour
 	public void HandleMouseRotation()
 	{
 		float easeFactor = 10.0f;
+		// If the user is holding the right mouse button and the left control button
 		if (Input.GetMouseButton (1) && Input.GetKey (KeyCode.LeftControl))
 		{
-			// Horizontal Rotation
+			// Horizontal Rotation - check is there is a change in the X axis of the mouse
 			if(Input.mousePosition.x != mouseX)
 			{
+				// Update the camera horizontal position
 				float cameraRotationY = (Input.mousePosition.x - mouseX) * easeFactor * Time.deltaTime;
 				this.transform.Rotate(0, cameraRotationY, 0);
 			}
-
-			// Vertical Rotation
+			// Vertical Rotation - check is there is a change in the Y axis of the mouse and that vertical rotation is enabled
 			if(verticalRotationEnabled && Input.mousePosition.y != mouseY)
 			{
+				// Get the child of the camera controller - the camera
 				GameObject mainCamera = this.gameObject.transform.FindChild("Main Camera").gameObject;
-
+				// Update the camera rotataion calculations
 				float cameraRotationX = (mouseY - Input.mousePosition.y) * easeFactor * Time.deltaTime;
 				float desiredRotation = mainCamera.transform.eulerAngles.x + cameraRotationX;
-
+				// Check if the rotation if within the range
 				if (desiredRotation >= verticalRotationMin && desiredRotation <= verticalRotationMax)
 				{
 					// Affected the main camera to avoid the camera arking when rotating

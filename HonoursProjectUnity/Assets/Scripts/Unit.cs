@@ -19,10 +19,6 @@ public class Unit : MonoBehaviour
 	Vector3[] path;
 	int targetIndex;
 
-	void Start()
-	{
-	}
-
 	public void OnPathFound(Vector3[] newPath, bool success)
 	{
 		if (success) 
@@ -54,10 +50,9 @@ public class Unit : MonoBehaviour
 		}
 	}
 
-
-
 	public void OnDrawGizmos()
 	{
+		// If there is currently a path
 		if (path != null)
 		{
 			for (int i = targetIndex; i < path.Length; i++ )
@@ -104,17 +99,17 @@ public class Unit : MonoBehaviour
 				}
 			}
 		}
-
 	}
 
 	void LateUpdate()
 	{
 		if (isSelected) 
 		{
+			// If the mouse right click is pressed and the left control is currently not pressed 
 			if (Input.GetMouseButtonDown(1) && !Input.GetKey(KeyCode.LeftControl))
 			{
+				// Start pathfinding from unit current position to right mouse click position
 				PathRequestManager.RequestPath (transform.position, MousePoint.RightMouseClick, OnPathFound);
-				
 			}
 		}
 	}
