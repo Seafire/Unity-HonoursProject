@@ -39,10 +39,7 @@ public class Heap<T> where T : IHeapItem<T>
 	
 	public int Count 
 	{
-		get
-		{
-			return currentItemCount;
-		}
+		get { return currentItemCount; }
 	}
 	
 	public bool Contains(T _item) 

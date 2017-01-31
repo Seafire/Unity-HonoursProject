@@ -15,7 +15,7 @@ public class Unit : MonoBehaviour
 	public bool isWalkable = true;
 
 	public Transform target;
-	float speed = 10;
+	float speed = 100;
 	Vector3[] path;
 	int targetIndex;
 
@@ -109,7 +109,9 @@ public class Unit : MonoBehaviour
 			if (Input.GetMouseButtonDown(1) && !Input.GetKey(KeyCode.LeftControl))
 			{
 				// Start pathfinding from unit current position to right mouse click position
-				PathRequestManager.RequestPath (transform.position, MousePoint.RightMouseClick, OnPathFound);
+				//PathRequestManager.RequestPath (transform.position, MousePoint.RightMouseClick, OnPathFound);
+				CharacterStats selectedUnit = GetComponent <CharacterStats> ();
+				selectedUnit.MoveToPosition(MousePoint.RightMouseClick);
 			}
 		}
 	}

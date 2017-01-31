@@ -6,12 +6,14 @@ using System;
 public class Pathfinding : MonoBehaviour 
 {
 	
-	PathRequestManager requestManager;
-	Grid grid;
+	PathRequestManager requestManager;		/* Access to the request manager */
+	Grid grid;								/* Access to the Grid */
 	
 	void Awake() 
 	{
+		// Initialize the request manager
 		requestManager = GetComponent<PathRequestManager>();
+		// Initialize the grid
 		grid = GetComponent<Grid>();
 	}
 
@@ -25,30 +27,35 @@ public class Pathfinding : MonoBehaviour
 		
 		Vector3[] waypoints = new Vector3[0];
 		bool pathSuccess = false;
-		
+
+		// Convert the positions in terms of Nodes
 		Node startNode = grid.NodeFromWorldPoint(_startPos);
 		Node targetNode = grid.NodeFromWorldPoint(_targetPos);
 		
-		
+		// Check if the nodes are passable
 		if (startNode.walkable && targetNode.walkable)
 		{
 			Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
 			HashSet<Node> closedSet = new HashSet<Node>();
 			openSet.Add(startNode);
-			
+
+			// While the open set is not empty
 			while (openSet.Count > 0)
 			{
+				// The current Node is equal to the first element
 				Node currentNode = openSet.RemoveFirst();
 				closedSet.Add(currentNode);
-				
+				// If the target node is reached
 				if (currentNode == targetNode)
 				{
+					// Stop searching for a path
 					pathSuccess = true;
 					break;
 				}
 				
 				foreach (Node neighbour in grid.GetNeighbours(currentNode))
 				{
+					// If the node cannot be traversed
 					if (!neighbour.walkable || closedSet.Contains(neighbour))
 					{
 						continue;

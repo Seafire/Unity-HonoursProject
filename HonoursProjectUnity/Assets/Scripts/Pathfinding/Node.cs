@@ -4,10 +4,10 @@ using System.Collections;
 public class Node : IHeapItem<Node> 
 {
 	
-	public bool walkable;
-	public Vector3 worldPosition;
-	public int gridX;
-	public int gridY;
+	public bool walkable;				/* Is the current node passable to the unit */
+	public Vector3 worldPosition;		/* The current node world position */
+	public int gridX;					/* Current x grid of node */
+	public int gridY;					/* Current y grid of node */
 	
 	public int gCost;
 	public int hCost;
@@ -24,22 +24,13 @@ public class Node : IHeapItem<Node>
 	
 	public int fCost 
 	{
-		get 
-		{
-			return gCost + hCost;
-		}
+		get { return gCost + hCost; }
 	}
 	
 	public int HeapIndex
 	{
-		get 
-		{
-			return heapIndex;
-		}
-		set 
-		{
-			heapIndex = value;
-		}
+		get { return heapIndex; }
+		set { heapIndex = value; }
 	}
 	
 	public int CompareTo(Node _nodeToCompare) 
