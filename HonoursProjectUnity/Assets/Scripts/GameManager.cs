@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 			HandleSelection ();
 
 		bool hasUnit = selectedUnit;
-		unitControls.SetActive (hasUnit);
+	//	unitControls.SetActive (hasUnit);
 	}
 
 	void HandleSelection ()

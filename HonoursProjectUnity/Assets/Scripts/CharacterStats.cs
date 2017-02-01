@@ -12,12 +12,18 @@ public class CharacterStats : MonoBehaviour
 	public bool run;
 	public bool alert = true;
 	//public GameObject selectCube;
-	PlayerControl plControl;
+	private PlayerControl plControl;
+	private EnemyAI enemyAI;
 
 	// Use this for initialization
 	void Start () 
 	{
 		plControl = GetComponent<PlayerControl>();
+
+		if (GetComponent<EnemyAI> ()) 
+		{
+			enemyAI = GetComponent <EnemyAI> ();
+		}
 	}
 	
 	// Update is called once per frame
@@ -40,6 +46,23 @@ public class CharacterStats : MonoBehaviour
 	public void CallFunctionWithString (string functionIndentifier, float delay)
 	{
 		Invoke (functionIndentifier, delay);
+	}
+
+	public void ChangeToNormal ()
+	{
+		enemyAI.ChangeAIBehaviour ("AI_State_Normal", 0);
+		alert = false;
+		crouch = false;
+		run = false;
+	}
+
+	public void ChangeToAlert (Vector3 _interest)
+	{
+		alert = true;
+		MoveToPosition (transform.position);
+		//plControl.moveToPosition = false;
+
+		enemyAI.GoOnAlert (_interest);
 	}
 
 	void ChangeStance ()
