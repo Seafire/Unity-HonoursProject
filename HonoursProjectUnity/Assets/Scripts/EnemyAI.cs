@@ -5,6 +5,13 @@ using System.Collections.Generic;
 public class EnemyAI : MonoBehaviour
 {
 
+	public CharacterStats target;
+	public float sightDistance = 20.0f;
+	Vector3 lastKnownPosition;
+
+	private float alertTimer;
+	private float alertTimerIncrement = 1.0f;
+
 	// General Behaviour Variables
 	public float delayNewBehaviour = 3.0f;
 	private float timeNewBehaviour;
@@ -47,6 +54,7 @@ public class EnemyAI : MonoBehaviour
 		chase,
 		alert,
 		onAlertBehaviours,
+		hasTarget,
 		attack
 	}
 
@@ -64,6 +72,7 @@ public class EnemyAI : MonoBehaviour
 		agent = GetComponent<NavMeshAgent> ();
 		charStats = GetComponent<CharacterStats> ();
 		charStats.alert = false;
+
 		enemyManager = GameObject.FindGameObjectWithTag ("GameController").GetComponent<EnemyManager> ();
 		enemyManager.AllEnemies.Add (charStats);
 
@@ -77,6 +86,8 @@ public class EnemyAI : MonoBehaviour
 		{
 			enemyManager.EnemyChase.Add (charStats);
 		}
+
+		sightDistance = GetComponentInChildren<EnemySightSphere> ().GetComponent<SphereCollider> ().radius;
 	}
 	
 	// Update is called once per frame
@@ -85,20 +96,166 @@ public class EnemyAI : MonoBehaviour
 		switch (stateAI) 
 		{
 		case StateAI.patrol:
+			DecreaseAlertLevel ();
 			Patrol();
+			TargetAvailable ();
 			break;
 		case StateAI.alert:
 			Alert ();
+			TargetAvailable ();
 			break;
 		case StateAI.onAlertBehaviours:
 			AlertExtra ();
+			TargetAvailable ();
 			break;
 		case StateAI.chase:
 			Chase ();
+			TargetAvailable ();
+			break;
+		case StateAI.hasTarget:
+			HasTarget ();
 			break;
 		case StateAI.attack:
 			Attack ();
 			break;
+		}
+	}
+
+	void DecreaseAlertLevel ()
+	{
+
+		if (charStats.alertLevel > 0)
+		{
+			alertTimer += Time.deltaTime;
+
+			if (alertTimer > alertTimerIncrement + 2.0f)
+			{
+				charStats.alertLevel--;
+				alertTimer = 0.0f;
+			}
+		}
+	}
+
+	void TargetAvailable ()
+	{
+		if (target)
+		{
+			if (SightRaycasts())
+			{
+				ChangeAIBehaviour("AI_State_HasTarget", 0);
+			}
+		}
+	}
+
+	bool SightRaycasts ()
+	{
+		bool val = false;
+		RaycastHit hitTowardsLower;
+		RaycastHit hitTowardsUpper;
+		float raycastDistance = sightDistance + (sightDistance * 0.5f);
+		Vector3 targetPosition = lastKnownPosition;
+
+		if (target)
+		{
+			targetPosition = target.transform.position;
+		}
+
+		/*
+		 *--ADD IF STATEMENT TO CHANGE RAY START DEPENDANT ON CROUCH OR STAND-- 
+		 * 
+		 * 
+		 */
+		Vector3 raycastStart = transform.position + new Vector3 (0, 1.6f, 0);
+		Vector3 dir = targetPosition - raycastStart;
+
+		// Exclude enemy and ragdoll mask
+		//LayerMask excludeLayers = ~((1 << 11) | (1 << 10));
+
+		Debug.DrawRay (raycastStart, dir + new Vector3 (0, 1, 0));
+
+		if (Physics.Raycast (raycastStart, dir + new Vector3 (0, 1, 0), out hitTowardsLower, raycastDistance)) 
+		{
+			if (hitTowardsLower.transform.GetComponent<CharacterStats>())
+			{
+				if (target)
+				{
+					if (hitTowardsLower.transform.GetComponent<CharacterStats> () == target)
+					{
+						val = true;
+					}
+				}
+			}
+		}
+
+		if (val == false)
+		{
+			//dir += new Vector3 (0, 1.6f, 0);
+
+			if (Physics.Raycast (raycastStart, dir + new Vector3 (0, 1.6f, 0), out hitTowardsUpper, raycastDistance)) 
+			{
+				if (target)
+				{
+					if (hitTowardsUpper.transform == target.transform)
+					{
+						val = true;
+					}
+				}
+			}
+		}
+
+		if (val)
+			lastKnownPosition = target.transform.position;
+
+		return val;
+	}
+
+	void HasTarget ()
+	{
+		charStats.StopMoving ();
+
+		if (SightRaycasts ())
+		{
+			if (charStats.alertLevel < 10.0f)
+			{
+				float distanceToTarget = Vector3.Distance (transform.position, target.transform.position);
+				float multiplier = 1 + (distanceToTarget * 0.1f);
+
+				/*
+				 * FUTURE DEVELOPMENT - INCREAMENT HOW FAST PLAYER IS DETECTED BASED ON DISTANCE
+				 */
+
+				alertTimer += Time.deltaTime * multiplier;
+
+				if (alertTimer > alertTimerIncrement)
+				{
+					charStats.alertLevel++;
+					alertTimer = 0;
+				}
+			}
+			else
+			{
+				ChangeAIBehaviour ("AI_State_Attack", 0);
+			}
+
+			LookAtTarget (lastKnownPosition);
+		}
+		else
+		{
+			if (charStats.alertLevel > 5)
+			{
+				ChangeAIBehaviour ("AL_State_Chase", 0);
+				pointOfInterest = lastKnownPosition;
+			}
+			else
+			{
+				delayNewBehaviour -= Time.deltaTime;
+				
+				if (delayNewBehaviour <= 0)
+				{
+					ChangeAIBehaviour ("AI_State_Normal", 0);
+					delayNewBehaviour = 3;
+				}
+			}
 		}
 	}
 
@@ -187,14 +344,59 @@ public class EnemyAI : MonoBehaviour
 	// All actions if the enemy loses site of the player
 	void Chase ()
 	{
-		charStats.MoveToPosition (pointOfInterest);
-		charStats.run = true;
-		goToPos = true;
+		if (target == null) 
+		{
+			if (!goToPos)
+			{
+				charStats.MoveToPosition (pointOfInterest);
+				charStats.run = true;
+				goToPos = true;
+			}
+		}
+		else
+		{
+			charStats.MoveToPosition (target.transform.position);
+			charStats.run = true;
+		}
+
+		if (!SightRaycasts ())
+		{
+			if (target)
+			{
+				lastKnownPosition = target.transform.position;
+				target = null;
+			}
+		}
+
 	}
 	
+	// All actions if the enemy is attacking the player
 	void Attack ()
 	{
-		// All actions if the enemy is attacking the player
+		if (SightRaycasts ())
+		{
+			LookAtTarget (lastKnownPosition);
+			charStats.aim = true;
+		}
+		else
+		{
+			charStats.aim = false;
+			ChangeAIBehaviour ("AI_State_Chase", 0);
+		}
+	}
+
+	void LookAtTarget (Vector3 posToLook)
+	{
+		Vector3 dirToLook = posToLook - transform.position;
+		dirToLook.y = 0;
+
+		float angle = Vector3.Angle (transform.forward, dirToLook);
+
+		if (angle > 0.1f)
+		{
+			targetRot = Quaternion.LookRotation (dirToLook);
+			transform.localRotation = Quaternion.Slerp (transform.localRotation, targetRot, Time.deltaTime * 3);
+		}
 	}
 
 	/*
@@ -310,6 +512,8 @@ public class EnemyAI : MonoBehaviour
 	void AI_State_Normal ()
 	{
 		stateAI = StateAI.patrol;
+		target = null;
+		charStats.alert = false;
 		goToPos = false;
 		lookAtPoint = false;
 		initCheck = false;
@@ -334,6 +538,15 @@ public class EnemyAI : MonoBehaviour
 	void AI_State_Attack ()
 	{
 		stateAI = StateAI.attack;
+	}
+
+	void AI_State_HasTarget ()
+	{
+		stateAI = StateAI.hasTarget;
+		charStats.alert = true;
+		goToPos = false;
+		lookAtPoint = false;
+		initCheck = false;
 	}
 
 	/*
@@ -449,6 +662,12 @@ public class EnemyAI : MonoBehaviour
 	}
 }
 
+
+/*
+ * 
+ *--STRUCT TO CONTAIN THE INFORMATION OF EACH WAYPOINT THAT IS IN THE WORLD-- 
+ * 
+ */
 
 [System.Serializable]
 public struct Waypoints

@@ -40,7 +40,14 @@ public class PlayerControl : MonoBehaviour
 		agent.speed = walkSpeed;
 
 		agent.updateRotation = true;
+		//agent.angularSpeed = 500;
+		//agent.autoBraking = false;
 
+		if (GetComponentInChildren<EnemySightSphere> ())
+		{
+			GetComponentInChildren<EnemySightSphere> ().gameObject.layer = 2;
+		}
+	
 	}
 	
 	// Update is called once per frame
@@ -66,6 +73,7 @@ public class PlayerControl : MonoBehaviour
 		}
 
 		HandleSpeed ();
+		//HandleAiming ();
 		HandleAnimation ();
 		HandleStates ();
 	}
@@ -87,6 +95,11 @@ public class PlayerControl : MonoBehaviour
 		}
 		anim.SetFloat ("Forward", animValue, 0.3f, Time.deltaTime)
 		*/
+	}
+
+	void HandleAiming ()
+	{
+		// anim.SetBool ("Aim", charStats.aim);
 	}
 
 	void HandleSpeed ()
@@ -131,5 +144,25 @@ public class PlayerControl : MonoBehaviour
 
 		stance = Mathf.Lerp (stance, targetStance, Time.deltaTime * 3.0f);
 		//anim.SetFloat("Stance", stance);
+	}
+
+	void InitRagdoll ()
+	{
+		Rigidbody[] rigB = GetComponentsInChildren<Rigidbody> ();
+		Collider[] cols = GetComponentsInChildren<Collider> ();
+
+		for (int i = 0; i < rigB.Length; i++)
+		{
+			rigB[i].isKinematic = true;
+		}
+
+		for (int i = 0; i < cols.Length; i++)
+		{
+			if (i != 0)
+			{
+				cols[i].gameObject.layer = 10;
+			}
+			cols[i].isTrigger = true;
+		}
 	}
 }

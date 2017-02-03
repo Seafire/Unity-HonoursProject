@@ -5,19 +5,27 @@ public class CharacterStats : MonoBehaviour
 {
 
 	public float health;
+	public float viewAngleLimit = 50.0f;
+	public int alertLevel;
 	public int team;
 	public bool selected;
 	public bool dead;
 	public bool crouch;
 	public bool run;
 	public bool alert = true;
+	public bool aim;
+	public bool shooting;
 	//public GameObject selectCube;
 	private PlayerControl plControl;
 	private EnemyAI enemyAI;
 
+	public Transform alertDebugCube;
+
 	// Use this for initialization
 	void Start () 
 	{
+		health = 100.0f;
+
 		plControl = GetComponent<PlayerControl>();
 
 		if (GetComponent<EnemyAI> ()) 
@@ -35,12 +43,23 @@ public class CharacterStats : MonoBehaviour
 		{
 			crouch = false;
 		}
+
+		if (alertDebugCube)
+		{
+			float scale = alertLevel * 0.05f;
+			alertDebugCube.localScale = new Vector3(scale, scale, scale);
+		}
 	}
 
 	public void MoveToPosition (Vector3 position)
 	{
 		plControl.moveToPosition = true;
 		plControl.destPosition = position;
+	}
+
+	public void StopMoving ()
+	{
+		plControl.moveToPosition = false;
 	}
 
 	public void CallFunctionWithString (string functionIndentifier, float delay)

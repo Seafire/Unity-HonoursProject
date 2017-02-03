@@ -1,14 +1,14 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\EnemyAI.cs">
     <Files>
-      <File FileName="Assets\Scripts\PointOfInterest.cs" Line="23" Column="5" />
-      <File FileName="Assets\Scripts\EnemyAI.cs" Line="131" Column="94" />
-      <File FileName="Assets\Scripts\CharacterStats.cs" Line="63" Column="5" />
-      <File FileName="Assets\Scripts\EnemyManager.cs" Line="43" Column="32" />
-      <File FileName="Assets\Scripts\EnemyUI.cs" Line="20" Column="19" />
-      <File FileName="Assets\Scripts\PlayerControl.cs" Line="65" Column="21" />
-      <File FileName="Assets\Scripts\Unit.cs" Line="114" Column="17" />
+      <File FileName="Assets\Scripts\EnemySightSphere.cs" Line="16" Column="33" />
+      <File FileName="Assets\Scripts\CharacterStats.cs" Line="49" Column="28" />
+      <File FileName="Assets\Scripts\PointOfInterest.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\EnemyAI.cs" Line="384" Column="26" />
+      <File FileName="Assets\Scripts\EnemyUI.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\PlayerControl.cs" Line="44" Column="5" />
+      <File FileName="Assets\Scripts\Unit.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
