@@ -100,6 +100,12 @@ public class PlayerControl : MonoBehaviour
 	void HandleAiming ()
 	{
 		// anim.SetBool ("Aim", charStats.aim);
+
+		//if (charStats.shooting)
+	//	{
+		//	anim.SetTrigger ("Shooting");
+		//	charStats.shooting = false;
+	//	}
 	}
 
 	void HandleSpeed ()

@@ -83,7 +83,7 @@ public class MousePoint : MonoBehaviour
 				}
 				if(isUserDragging)
 				{
-					Debug.Log("User is dragging");
+
 				}
 			}
 			else if (Input.GetMouseButtonUp (0))
@@ -92,8 +92,6 @@ public class MousePoint : MonoBehaviour
 					finishDragOnFrame = true;
 
 				isUserDragging = false;
-				
-				Debug.Log (isUserDragging);
 			}
 
 			// Mouse click

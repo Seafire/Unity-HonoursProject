@@ -49,10 +49,10 @@ public class WorldCamera : MonoBehaviour
 	void Start()
 	{
 		// Set up camera limits
-		cameraLimits.leftLimit = worldTerrain.transform.position.x + worldTerrainPadding;
-		cameraLimits.rightLimit = worldTerrain.terrainData.size.x - worldTerrainPadding;
-		cameraLimits.topLimit = worldTerrain.transform.position.z + worldTerrainPadding;
-		cameraLimits.bottomLimit = worldTerrain.terrainData.size.z - worldTerrainPadding;
+//		cameraLimits.leftLimit = worldTerrain.transform.position.x + worldTerrainPadding;
+//		cameraLimits.rightLimit = worldTerrain.terrainData.size.x - worldTerrainPadding;
+//		cameraLimits.topLimit = worldTerrain.transform.position.z + worldTerrainPadding;
+//		cameraLimits.bottomLimit = worldTerrain.terrainData.size.z - worldTerrainPadding;
 		// Set up mouse limits
 		mouseScrollLimits.leftLimit = mouseBoundary;
 		mouseScrollLimits.rightLimit = mouseBoundary;

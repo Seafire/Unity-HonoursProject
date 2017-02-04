@@ -16,6 +16,32 @@ public class EnemyAI : MonoBehaviour
 	public float delayNewBehaviour = 3.0f;
 	private float timeNewBehaviour;
 
+	// Attacking Variables
+	public bool startShooting;
+	public float attackRate = 1.5f;
+	public float shootRate = 0.3f;
+	private float shootR;
+	private float attackR;
+	public ParticleSystem muzzleFire;
+
+	// Searching Variables
+	public bool decideBehaviour;
+	public float decideBehaviourThreshold = 5.0f;
+	public float alertMultiplier = 1.0f;
+	public List<Transform> possibleHidingAreas = new List<Transform> ();
+	public List<Vector3> positionsArroundUnit = new List<Vector3> ();
+	private bool getPossibleHidingArea;
+	private bool populateListPositions;
+	private bool searchAtPoint;
+	private bool createSearchPos;
+	private bool searchHidingSpot;
+	private int indexSearchPos;
+	Transform targetHidingSpot;
+
+	// Shooting Variables
+	private int timesToShoot;
+	private int timesShot;
+
 	// Alert Variables
 	public bool onPatrol;
 	public bool canChase;
@@ -45,6 +71,12 @@ public class EnemyAI : MonoBehaviour
 	public List<Waypoints> waypoints = new List<Waypoints> ();
 	public string[] alertLogic;
 
+	// Components
+	PlayerControl plControl;
+	//NavMeshAgent agent;
+	CharacterStats charStats;
+	EnemyManager enemyManager;
+
 	// States
 	public StateAI stateAI;
 
@@ -55,21 +87,15 @@ public class EnemyAI : MonoBehaviour
 		alert,
 		onAlertBehaviours,
 		hasTarget,
+		search,
 		attack
 	}
-
-	// Components
-	PlayerControl plControl;
-	NavMeshAgent agent;
-	CharacterStats charStats;
-	EnemyManager enemyManager;
 	
-
 	// Use this for initialization
 	void Start () 
 	{
 		plControl = GetComponent<PlayerControl> ();
-		agent = GetComponent<NavMeshAgent> ();
+		//agent = GetComponent<NavMeshAgent> ();
 		charStats = GetComponent<CharacterStats> ();
 		charStats.alert = false;
 
@@ -96,21 +122,28 @@ public class EnemyAI : MonoBehaviour
 		switch (stateAI) 
 		{
 		case StateAI.patrol:
+			alertMultiplier = 1;
 			DecreaseAlertLevel ();
 			Patrol();
 			TargetAvailable ();
 			break;
 		case StateAI.alert:
-			Alert ();
 			TargetAvailable ();
+			Alert ();
 			break;
 		case StateAI.onAlertBehaviours:
-			AlertExtra ();
 			TargetAvailable ();
+			AlertExtra ();
 			break;
 		case StateAI.chase:
-			Chase ();
 			TargetAvailable ();
+			Chase ();
+			break;
+		case StateAI.search:
+			alertMultiplier = 0.3f;
+			TargetAvailable ();
+			DecreaseAlertLevel ();
+			SearchBehaviour ();
 			break;
 		case StateAI.hasTarget:
 			HasTarget ();
@@ -126,12 +159,20 @@ public class EnemyAI : MonoBehaviour
 
 		if (charStats.alertLevel > 0)
 		{
-			alertTimer += Time.deltaTime;
+			alertTimer += Time.deltaTime * alertMultiplier;
 
-			if (alertTimer > alertTimerIncrement + 2.0f)
+			if (alertTimer > alertTimerIncrement * 2.0f)
 			{
 				charStats.alertLevel--;
 				alertTimer = 0.0f;
+			}
+		}
+
+		if (charStats.alertLevel == 0)
+		{
+			if (stateAI != StateAI.patrol)
+			{
+				ChangeAIBehaviour ("AI_State_Normal", 0);
 			}
 		}
 	}
@@ -152,7 +193,7 @@ public class EnemyAI : MonoBehaviour
 		bool val = false;
 		RaycastHit hitTowardsLower;
 		RaycastHit hitTowardsUpper;
-		float raycastDistance = sightDistance + (sightDistance * 0.5f);
+		float raycastDistance = sightDistance;
 		Vector3 targetPosition = lastKnownPosition;
 
 		if (target)
@@ -169,11 +210,11 @@ public class EnemyAI : MonoBehaviour
 		Vector3 dir = targetPosition - raycastStart;
 
 		// Exclude enemy and ragdoll mask
-		//LayerMask excludeLayers = ~((1 << 11) | (1 << 10));
+		LayerMask excludeLayers = ~((1 << 11) | (1 << 10));
 
 		Debug.DrawRay (raycastStart, dir + new Vector3 (0, 1, 0));
 
-		if (Physics.Raycast (raycastStart, dir + new Vector3 (0, 1, 0), out hitTowardsLower, raycastDistance)) 
+		if (Physics.Raycast (raycastStart, dir + new Vector3 (0, 1, 0), out hitTowardsLower, raycastDistance, excludeLayers)) 
 		{
 			if (hitTowardsLower.transform.GetComponent<CharacterStats>())
 			{
@@ -191,7 +232,7 @@ public class EnemyAI : MonoBehaviour
 		{
 			//dir += new Vector3 (0, 1.6f, 0);
 
-			if (Physics.Raycast (raycastStart, dir + new Vector3 (0, 1.6f, 0), out hitTowardsUpper, raycastDistance)) 
+			if (Physics.Raycast (raycastStart, dir + new Vector3 (0, 1.6f, 0), out hitTowardsUpper, raycastDistance, excludeLayers)) 
 			{
 				if (target)
 				{
@@ -215,6 +256,7 @@ public class EnemyAI : MonoBehaviour
 
 		if (SightRaycasts ())
 		{
+			Debug.Log ("I should be updating alert");
 			if (charStats.alertLevel < 10.0f)
 			{
 				float distanceToTarget = Vector3.Distance (transform.position, target.transform.position);
@@ -243,7 +285,7 @@ public class EnemyAI : MonoBehaviour
 		{
 			if (charStats.alertLevel > 5)
 			{
-				ChangeAIBehaviour ("AL_State_Chase", 0);
+				ChangeAIBehaviour ("AI_State_Chase", 0);
 				pointOfInterest = lastKnownPosition;
 			}
 			else
@@ -366,22 +408,233 @@ public class EnemyAI : MonoBehaviour
 				lastKnownPosition = target.transform.position;
 				target = null;
 			}
+			else
+			{
+				float disFromTargetPos = Vector3.Distance (transform.position, lastKnownPosition);
+
+				if (disFromTargetPos < 2)
+				{
+					delayNewBehaviour -= Time.deltaTime;
+					
+					if (delayNewBehaviour <= 0)
+					{
+						ChangeAIBehaviour ("AI_State_Search", 0);
+						delayNewBehaviour = 3;
+					}
+				}
+			}
 		}
 
 	}
-	
-	// All actions if the enemy is attacking the player
-	void Attack ()
+
+	void SearchBehaviour ()
 	{
-		if (SightRaycasts ())
+		if (!decideBehaviour)
 		{
-			LookAtTarget (lastKnownPosition);
-			charStats.aim = true;
+			int ranVal = Random.Range (0, 11);
+
+			if (ranVal < decideBehaviourThreshold)
+			{
+				searchAtPoint = true;
+				Debug.Log ("Searching in position around unit");
+			}
+			else
+			{
+				searchHidingSpot = true;
+				Debug.Log ("Searching in Hiding Spots");
+			}
+
+			decideBehaviour = true;
 		}
 		else
 		{
-			charStats.aim = false;
-			ChangeAIBehaviour ("AI_State_Chase", 0);
+			if (searchHidingSpot)
+			{
+				if (!populateListPositions)
+				{
+					possibleHidingAreas.Clear();
+
+					Collider[] allColliders = Physics.OverlapSphere (transform.position, 20);
+
+					for (int i = 0; i < allColliders.Length; i++)
+					{
+						if (allColliders[i].GetComponent<HidingSpot>())
+						{
+							possibleHidingAreas.Add (allColliders[i].transform);
+						}
+					}
+					populateListPositions = true;
+				}
+				else if (possibleHidingAreas.Count > 0)
+				{
+					if (!targetHidingSpot)
+					{
+						int ranVal = Random.Range (0, possibleHidingAreas.Count);
+
+						targetHidingSpot = possibleHidingAreas [ranVal];
+					}
+					else
+					{
+						charStats.MoveToPosition (targetHidingSpot.position);
+
+						Debug.Log ("Going to hiding spot");
+						float disToTarget = Vector3.Distance (transform.position, targetHidingSpot.position);
+
+						if (disToTarget < 2)
+						{
+							delayNewBehaviour -= Time.deltaTime;
+							
+							if (delayNewBehaviour <= 0)
+							{
+								// reset
+								populateListPositions = false;
+								targetHidingSpot = null;
+								decideBehaviour = false;
+								delayNewBehaviour = 3;
+							}
+						}
+					}
+				}
+				else
+				{
+					Debug.Log ("No hiding spots found");
+					searchAtPoint = false;
+					populateListPositions = false;
+					targetHidingSpot = null;
+				}
+			}
+
+
+			if (searchAtPoint)
+			{
+				if (!createSearchPos)
+				{
+					positionsArroundUnit.Clear();
+
+					int ranVal = Random.Range (4, 10);
+
+					for (int i = 0; i < ranVal; i++)
+					{
+						float offsetX = Random.Range (-10, 10);
+						float offsetZ = Random.Range (-10, 10);
+
+						Vector3 originPos = transform.position;
+						originPos += new Vector3 (offsetX, 0, offsetZ);
+
+						NavMeshHit hit;
+
+						if (NavMesh.SamplePosition (originPos, out hit, 5, NavMesh.AllAreas))
+						{
+							positionsArroundUnit.Add (hit.position);
+						}
+					}
+
+					if (positionsArroundUnit.Count > 0)
+					{
+						indexSearchPos = 0;
+						createSearchPos = true;
+					}
+				}
+				else
+				{
+					Vector3 targetPos = positionsArroundUnit[indexSearchPos];
+
+					Debug.Log ("Going to position");
+
+					charStats.MoveToPosition (targetPos);
+
+					float disToPos = Vector3.Distance (transform.position, targetPos);
+
+					if (disToPos < 2)
+					{
+						int ranVal = Random.Range (0, 11);
+						decideBehaviour = (ranVal <5);
+
+						if (indexSearchPos < positionsArroundUnit.Count - 1)
+						{
+							delayNewBehaviour -= Time.deltaTime;
+							
+							if (delayNewBehaviour <= 0)
+							{
+								indexSearchPos++;
+								delayNewBehaviour = 3;
+							}
+						}
+						else
+						{
+							delayNewBehaviour -= Time.deltaTime;
+							
+							if (delayNewBehaviour <= 0)
+							{
+								indexSearchPos = 0;
+								delayNewBehaviour = 3;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/*
+	 * 
+	 * --ATTACK FUNCTIONS-- 
+	 * 
+	 */
+	void Attack ()
+	{
+		if (!startShooting)
+		{
+			if (SightRaycasts ())
+			{
+				LookAtTarget (lastKnownPosition);
+				charStats.aim = true;
+
+				attackR += Time.deltaTime;
+
+				if (attackR > attackRate)
+				{
+					startShooting = true;
+					timesShot = 0;
+					timesToShoot = Random.Range (0, 4);
+					attackR = 0.0f;
+				}
+			}
+			else
+			{
+				charStats.aim = false;
+				ChangeAIBehaviour ("AI_State_Chase", 0);
+			}
+		}
+		else
+		{
+			ShootingBehaviour ();
+		}
+	}
+
+	/*
+	 * 
+	 * --SHOOTING FUNCTIONS-- 
+	 * 
+	 */
+	void ShootingBehaviour ()
+	{
+		if (timesShot < shootRate)
+		{
+			shootR += Time.deltaTime;
+
+			if (shootR > shootRate)
+			{
+				muzzleFire.Emit(1);
+				//audioSource.Play ();
+				charStats.shooting = true;
+				timesShot++;
+				shootR = 0;
+			}
+		}
+		else
+		{
+			startShooting = false;
 		}
 	}
 
@@ -492,11 +745,6 @@ public class EnemyAI : MonoBehaviour
 	 * 
 	 */
 
-	/*
-	 * 
-	 * --ATTACK FUNCTIONS-- 
-	 * 
-	 */
 	
 	/*
 	 * 
@@ -522,6 +770,15 @@ public class EnemyAI : MonoBehaviour
 	void AI_State_Chase ()
 	{
 		stateAI = StateAI.chase;
+		goToPos = false;
+		lookAtPoint = false;
+		initCheck = false;
+	}
+
+	void AI_State_Search ()
+	{
+		stateAI = StateAI.search;
+		target = null;
 		goToPos = false;
 		lookAtPoint = false;
 		initCheck = false;

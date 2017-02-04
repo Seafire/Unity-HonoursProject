@@ -61,8 +61,9 @@ public class EnemySightSphere : MonoBehaviour
 		{
 			CharacterStats colStats = col.GetComponent<CharacterStats> ();
 
-			if (!trackingTargets.Contains (colStats))
+			if (trackingTargets.Contains (colStats))
 			{
+				Debug.Log ("Remove me");
 				trackingTargets.Remove (colStats);
 			}
 		}
