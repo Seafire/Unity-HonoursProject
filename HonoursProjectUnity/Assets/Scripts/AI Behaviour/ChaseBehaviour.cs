@@ -26,7 +26,7 @@ public class ChaseBehaviour : MonoBehaviour
 		{
 			if (!enemyAI_Main.goToPos)
 			{
-				enemyAI_Main.charStats.MoveToPosition (enemyAI_Main.pointOfInterest);
+				enemyAI_Main.charStats.MoveToPosition (enemyAI_Main.lastKnownPosition);
 				enemyAI_Main.charStats.run = true;
 				enemyAI_Main.goToPos = true;
 			}
@@ -48,7 +48,7 @@ public class ChaseBehaviour : MonoBehaviour
 			{
 				float disFromTargetPos = Vector3.Distance (transform.position, enemyAI_Main.lastKnownPosition);
 				
-				if (disFromTargetPos < 2)
+				if (disFromTargetPos < 0.1)
 				{
 					delayNewBehaviour -= Time.deltaTime;
 					

@@ -61,6 +61,7 @@ public class EnemyAI : MonoBehaviour
 		onAlertBehaviours,
 		hasTarget,
 		search,
+		cover,
 		attack
 	}
 	
@@ -101,7 +102,7 @@ public class EnemyAI : MonoBehaviour
 		switch (stateAI) 
 		{
 		case StateAI.patrol:
-			alertMultiplier = 1;
+			alertMultiplier = 0.5f;
 			commonBehaviour.DecreaseAlertLevel ();
 			commonBehaviour.Patrol();
 			TargetAvailable ();
@@ -126,6 +127,9 @@ public class EnemyAI : MonoBehaviour
 			break;
 		case StateAI.hasTarget:
 			attackBehaviour.HasTarget ();
+			break;
+		case StateAI.cover:
+			attackBehaviour.Cover ();
 			break;
 		case StateAI.attack:
 			attackBehaviour.Attack ();
@@ -177,19 +181,28 @@ public class EnemyAI : MonoBehaviour
 		if (Physics.Raycast (raycastStart, dir + new Vector3 (0, 1, 0), out hitTowardsLower, 50, excludeLayers)) 
 		{
 			Debug.Log ("I have hit something");
-			if (hitTowardsLower.transform.GetComponent<CharacterStats>())
+			//if (hitTowardsLower.transform.GetComponent<CharacterStats>())
+			//{
+			Debug.Log ("That hit has a character");
+			if (target)
 			{
-				Debug.Log ("That hit has a character");
-				if (target)
+
+				//if (hitTowardsLower.transform.GetComponent<CharacterStats> () == target)
+				//{
+				//	Debug.Log ("Now attack");
+				//	val = true;
+				//}
+				if (hitTowardsLower.transform == target.transform)
 				{
-					Debug.Log ("I have a target");
-					if (hitTowardsLower.transform.GetComponent<CharacterStats> () == target)
-					{
-						Debug.Log ("Now attack");
-						val = true;
-					}
+					val = true;
 				}
 			}
+			else 
+			{
+				Debug.Log ("I don't have a target");
+				return false;
+			}
+			//}
 		}
 		/*
 		if (val == false)
@@ -200,10 +213,7 @@ public class EnemyAI : MonoBehaviour
 			{
 				if (target)
 				{
-					if (hitTowardsUpper.transform == target.transform)
-					{
-						val = true;
-					}
+
 				}
 			}
 		}

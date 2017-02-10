@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class AttackBehaviour : MonoBehaviour 
 {
@@ -19,6 +20,15 @@ public class AttackBehaviour : MonoBehaviour
 	private float attackR;
 	public ParticleSystem muzzleFire;
 
+	// Cover Variables
+	private bool findCoverPosition;
+	public List <Transform> coverPositions = new List<Transform> ();
+	public List <Transform> ignorePositions = new List<Transform> ();
+	private ObjectDistanceComparer comparer;
+	public CoverBase currentCover;
+	public int maxTries = 3;
+	public int curTries;
+
 	EnemyAI enemyAI_Main;
 	
 	// Use this for initialization
@@ -27,12 +37,150 @@ public class AttackBehaviour : MonoBehaviour
 		enemyAI_Main = GetComponent<EnemyAI> ();
 	}
 
-	
-	// Update is called once per frame
-	void Update () {
-	
+	public void Cover ()
+	{
+		if (!findCoverPosition)
+		{
+			FindCover ();
+		}
+		else
+		{
+			enemyAI_Main.charStats.MoveToPosition (currentCover.positionObject.position);
+			enemyAI_Main.charStats.run = true;
+
+			float dis = Vector3.Distance (transform.position, currentCover.positionObject.position);
+
+			if (dis < 0.5f)
+			{
+				enemyAI_Main.charStats.StopMoving ();
+				enemyAI_Main.AI_State_Attack ();
+			}
+		}
 	}
 
+	void SortPosition (List<Transform> _positions)
+	{
+		comparer = new ObjectDistanceComparer (this.transform);
+		_positions.Sort (comparer);
+	}
+
+	private class ObjectDistanceComparer : IComparer<Transform>
+	{
+		private Transform referenceObject;
+
+		public ObjectDistanceComparer (Transform reference)
+		{
+			referenceObject = reference;
+		}
+
+		public int Compare (Transform x, Transform y)
+		{
+			float disX = Vector3.Distance (x.position, referenceObject.position);
+
+			float disY = Vector3.Distance (y.position, referenceObject.position);
+
+			int retVal = 0;
+
+			if (disX < disY)
+			{
+				retVal = -1;
+			}
+			else if (disX > disY)
+			{
+				retVal = 1;
+			}
+
+			return retVal;
+		}
+	}
+
+	void FindCover ()
+	{
+		if (curTries <= maxTries)
+		{
+			if (!findCoverPosition)
+			{
+				findCoverPosition = true;
+				curTries++;
+
+				CoverBase targetCoverPos = null;
+				float disToTarget = Vector3.Distance (transform.position, enemyAI_Main.target.transform.position);
+				
+				coverPositions.Clear ();
+				
+				Vector3 tarPosition = enemyAI_Main.target.transform.position;
+				
+				Collider[] colliders = Physics.OverlapSphere (transform.position, 20);
+				
+				for (int i = 0; i < colliders.Length; i++)
+				{
+					if (colliders[i].GetComponent<CoverPositions> ())
+					{
+						if (!ignorePositions.Contains (colliders[i].transform))
+						{
+							float disToCanidate = Vector3.Distance (transform.position, colliders[i].transform.position);
+							
+							if (disToCanidate < disToTarget)
+							{
+								coverPositions.Add (colliders[i].transform);
+							}
+						}
+					}
+				}
+				
+				if (coverPositions.Count > 0)
+				{
+					SortPosition (coverPositions);
+					
+					CoverPositions validatePosition = coverPositions[0].GetComponent<CoverPositions> ();
+					
+					Vector3 dirOfTarget = tarPosition - validatePosition.transform.position;
+					Vector3 coverForward = validatePosition.transform.TransformDirection (Vector3.forward);
+					
+					if (Vector3.Dot (coverForward, dirOfTarget) < 0)
+					{
+						for (int i = 0; i < validatePosition.BackPositions.Count; i++)
+						{
+							if (!validatePosition.BackPositions[i].occupied)
+							{
+								targetCoverPos = validatePosition.BackPositions[i];
+							}
+						}
+					}
+					else
+					{
+						for (int i = 0; i < validatePosition.FrontPositions.Count; i++)
+						{
+							if (!validatePosition.FrontPositions[i].occupied)
+							{
+								targetCoverPos = validatePosition.FrontPositions[i];
+							}
+						}
+					}
+				}
+				
+				if (targetCoverPos == null)
+				{
+					findCoverPosition = false;
+					
+					if (coverPositions.Count > 0)
+					{
+						ignorePositions.Add (coverPositions[0]);
+					}
+				}
+				else
+				{
+					targetCoverPos.occupied = true;
+					currentCover = targetCoverPos;
+				}
+			}
+		}
+		else
+		{
+			enemyAI_Main.AI_State_Attack ();
+		}
+	}
+	
 	/*
 	 * 
 	 * --ATTACK FUNCTIONS-- 
@@ -40,6 +188,8 @@ public class AttackBehaviour : MonoBehaviour
 	 */
 	public void Attack ()
 	{
+		enemyAI_Main.charStats.StopMoving ();
+
 		if (!startShooting)
 		{
 			if (enemyAI_Main.SightRaycasts ())
