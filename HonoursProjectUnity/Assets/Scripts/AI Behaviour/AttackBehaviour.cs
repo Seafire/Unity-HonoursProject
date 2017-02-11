@@ -11,6 +11,10 @@ public class AttackBehaviour : MonoBehaviour
 	// Shooting Variables
 	private int timesToShoot;
 	private int timesShot;
+	
+	private float delayAnim;
+	private bool validCover;
+	private bool onAimAnimation;
 
 	// Attacking Variables
 	public bool startShooting;
@@ -28,6 +32,7 @@ public class AttackBehaviour : MonoBehaviour
 	public CoverBase currentCover;
 	public int maxTries = 3;
 	public int curTries;
+
 
 	EnemyAI enemyAI_Main;
 	
@@ -52,6 +57,7 @@ public class AttackBehaviour : MonoBehaviour
 
 			if (dis < 0.5f)
 			{
+				enemyAI_Main.charStats.hasCover = true;
 				enemyAI_Main.charStats.StopMoving ();
 				enemyAI_Main.AI_State_Attack ();
 			}
@@ -203,7 +209,7 @@ public class AttackBehaviour : MonoBehaviour
 				{
 					startShooting = true;
 					timesShot = 0;
-					timesToShoot = Random.Range (0, 4);
+					timesToShoot = Random.Range (1, 5);
 					attackR = 0.0f;
 				}
 			}
@@ -217,6 +223,173 @@ public class AttackBehaviour : MonoBehaviour
 		{
 			ShootingBehaviour ();
 		}
+	}
+
+	public void AttackFromCover ()
+	{
+		if (!startShooting)
+		{
+			enemyAI_Main.LookAtTarget (enemyAI_Main.lastKnownPosition);
+			enemyAI_Main.charStats.run = false;
+			enemyAI_Main.charStats.crouch = true;
+
+			float attackRatePenalty = 0;
+
+			attackRatePenalty = enemyAI_Main.charStats.suppresionLevel * 0.01f;
+
+			attackR += Time.deltaTime;
+
+			if (attackR > attackRate + attackRatePenalty)
+			{
+				ReEvaluateCover ();
+
+				if (validCover)
+				{
+					enemyAI_Main.charStats.suppresionLevel -= 10;
+
+					if (enemyAI_Main.charStats.suppresionLevel < 0)
+						enemyAI_Main.charStats.suppresionLevel = 0;
+
+					if (SupressionPass ())
+					{
+						enemyAI_Main.charStats.crouch = false;
+						startShooting = true;
+						timesShot = 0;
+						timesToShoot = Random.Range (1, 5);
+						delayAnim = 0;
+					}
+				}
+				else
+				{
+					enemyAI_Main.charStats.aim = false;
+					findCoverPosition = false;
+					curTries = 0;
+					currentCover.occupied = false;
+					enemyAI_Main.AI_State_Cover ();
+				}
+				attackR = 0;
+			}
+		}
+		else
+		{
+			enemyAI_Main.LookAtTarget (enemyAI_Main.lastKnownPosition);
+			enemyAI_Main.charStats.aim = true;
+
+			delayAnim += Time.deltaTime;
+
+			if (delayAnim > 1)
+			{
+				if (enemyAI_Main.SightRaycasts ())
+				{
+					ShootingBehaviour ();
+				}
+				else
+				{
+					startShooting = false;
+					enemyAI_Main.charStats.aim = false;
+					attackR = 0;
+					timesShot = 0;
+					enemyAI_Main.AI_State_Chase ();
+				}
+			}
+		}
+	}
+
+	void ReEvaluateCover ()
+	{
+		Vector3 tarPosition = enemyAI_Main.lastKnownPosition;
+		Transform validatePosition = currentCover.positionObject.parent.parent.transform;
+
+		// FOR COVER TO WORK CREATE OBJECT, THEN CREATE EMPTY OBJECT TO STORE COVER POSITIONS
+
+		Vector3 dirOfTarget = tarPosition - validatePosition.TransformDirection (Vector3.forward);
+		Vector3 coverForward = validatePosition.TransformDirection (Vector3.forward);
+
+		if (Vector3.Dot (coverForward, dirOfTarget) > 0)
+		{
+			if (currentCover.backPos)
+				validCover = false;
+			else
+				validCover = true;
+		}
+		else
+		{
+			if (currentCover.backPos)
+				validCover = true;
+			else
+				validCover = false;
+		}
+	}
+
+	public void DecideAttack ()
+	{
+		bool supPass = SupressionPass ();
+		bool morPass = MoralePass ();
+
+		if (supPass && morPass)
+		{
+			enemyAI_Main.AI_State_Attack ();
+		}
+		else
+		{
+			if (!supPass)
+			{
+				enemyAI_Main.AI_State_Cover ();
+			}
+		}
+	}
+
+	bool SupressionPass ()
+	{
+		int ranValue = Random.Range (0, 101);
+
+		int enemyAiming = 0;
+
+		if (enemyAI_Main.target.aim)
+		{
+			enemyAiming = 10;
+		}
+
+		int modifier = enemyAiming;
+
+		ranValue += modifier;
+
+		if (ranValue < enemyAI_Main.charStats.suppresionLevel)
+			return false;
+		else
+			return true;
+	}
+
+	bool MoralePass ()
+	{
+		int ranValue = Random.Range (0, 101);
+
+		// add modifiers
+		int health = Mathf.RoundToInt (enemyAI_Main.charStats.health / 10);
+
+		int friendlies = 0;
+
+		if (enemyAI_Main.AlliesNear.Count > 0)
+		{
+			friendlies = 10;
+
+			for (int i = 0; i < enemyAI_Main.AlliesNear.Count; i++)
+			{
+				if (enemyAI_Main.AlliesNear[i].unitRank > enemyAI_Main.charStats.unitRank)
+				{
+					friendlies += 10;
+				}
+			}
+		}
+
+		int modifiers = health + friendlies;
+
+		ranValue -= modifiers;
+
+		if (ranValue > enemyAI_Main.charStats.morale)
+			return false;
+		else
+			return true;
 	}
 
 	/*
@@ -248,6 +421,8 @@ public class AttackBehaviour : MonoBehaviour
 	public void HasTarget ()
 	{
 		enemyAI_Main.charStats.StopMoving ();
+		// enemyAI_Main.plControl.moveToPosition = false;
+		Debug.Log (enemyAI_Main.plControl.moveToPosition);
 		
 		if (enemyAI_Main.SightRaycasts ())
 		{
@@ -271,10 +446,12 @@ public class AttackBehaviour : MonoBehaviour
 			}
 			else
 			{
-				enemyAI_Main.ChangeAIBehaviour ("AI_State_Attack", 0);
+				//enemyAI_Main.AI_State_Attack ();
+				enemyAI_Main.AI_State_DecideByStats ();
 			}
-			
+
 			enemyAI_Main.LookAtTarget (enemyAI_Main.lastKnownPosition);
+
 		}
 		else
 		{

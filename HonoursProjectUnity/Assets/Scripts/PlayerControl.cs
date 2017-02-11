@@ -57,6 +57,8 @@ public class PlayerControl : MonoBehaviour
 
 		if (moveToPosition) 
 		{
+			agent.Resume ();
+			agent.updateRotation = true;
 			agent.SetDestination (destPosition);
 
 			float distanceToTarget = Vector3.Distance(transform.position, destPosition);
@@ -70,6 +72,10 @@ public class PlayerControl : MonoBehaviour
 		else
 		{
 			// Stop the agent
+			agent.Stop ();
+			agent.updateRotation = false;
+
+			Debug.Log ("I should only be here once I reach my Destination");
 		}
 
 		HandleSpeed ();

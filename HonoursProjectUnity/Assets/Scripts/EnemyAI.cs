@@ -23,6 +23,7 @@ public class EnemyAI : MonoBehaviour
 	
 	public bool onPatrol;
 	public bool canChase;
+	public List<CharacterStats> AlliesNear = new List<CharacterStats> ();
 
 	// Waypoints
 	public bool goToPos;
@@ -46,7 +47,6 @@ public class EnemyAI : MonoBehaviour
 	[HideInInspector]
 	public AlertBehaviourMain alertBehaviours;
 	//[HideInInspector]
-	//public PatrolBehaviour patrolBehaviour;
 	[HideInInspector]
 	public SearchBehaviour searchBehaviour;
 
@@ -61,6 +61,7 @@ public class EnemyAI : MonoBehaviour
 		onAlertBehaviours,
 		hasTarget,
 		search,
+		deciding,
 		cover,
 		attack
 	}
@@ -76,7 +77,6 @@ public class EnemyAI : MonoBehaviour
 		chaseBehaviour = GetComponent<ChaseBehaviour> ();
 		attackBehaviour = GetComponent<AttackBehaviour> ();
 		alertBehaviours = GetComponent<AlertBehaviourMain> ();
-	//	patrolBehaviour = GetComponent<PatrolBehaviour> ();
 
 
 		enemyManager = GameObject.FindGameObjectWithTag ("GameController").GetComponent<EnemyManager> ();
@@ -131,8 +131,14 @@ public class EnemyAI : MonoBehaviour
 		case StateAI.cover:
 			attackBehaviour.Cover ();
 			break;
+		case StateAI.deciding:
+			attackBehaviour.DecideAttack();
+			break;
 		case StateAI.attack:
-			attackBehaviour.Attack ();
+			if (!charStats.hasCover)
+				attackBehaviour.Attack ();
+			else
+				attackBehaviour.AttackFromCover ();
 			break;
 		}
 	}
@@ -158,9 +164,7 @@ public class EnemyAI : MonoBehaviour
 		float raycastDistance = sightDistance;
 		Vector3 targetPosition = lastKnownPosition;
 
-		Debug.Log (raycastDistance);
-
-		if (target != null)
+		if (target)
 		{
 			targetPosition = target.transform.position;
 		}
@@ -180,60 +184,45 @@ public class EnemyAI : MonoBehaviour
 
 		if (Physics.Raycast (raycastStart, dir + new Vector3 (0, 1, 0), out hitTowardsLower, 50, excludeLayers)) 
 		{
-			Debug.Log ("I have hit something");
-			//if (hitTowardsLower.transform.GetComponent<CharacterStats>())
-			//{
-			Debug.Log ("That hit has a character");
-			if (target)
+			if (hitTowardsLower.transform.GetComponent<CharacterStats>())
 			{
-
-				//if (hitTowardsLower.transform.GetComponent<CharacterStats> () == target)
-				//{
-				//	Debug.Log ("Now attack");
-				//	val = true;
-				//}
-				if (hitTowardsLower.transform == target.transform)
+				if (target)
 				{
-					val = true;
+					if (hitTowardsLower.transform.GetComponent<CharacterStats> () == target)
+					{
+						Debug.Log ("Now attack");
+						val = true;
+					}
 				}
 			}
-			else 
-			{
-				Debug.Log ("I don't have a target");
-				return false;
-			}
-			//}
 		}
-		/*
+
 		if (val == false)
 		{
 			//dir += new Vector3 (0, 1.6f, 0);
 
 			if (Physics.Raycast (raycastStart, dir + new Vector3 (0, 1.6f, 0), out hitTowardsUpper, raycastDistance, excludeLayers)) 
 			{
-				if (target)
+				if (hitTowardsUpper.transform.GetComponent<CharacterStats>())
 				{
-
+					if (target)
+					{
+						if (hitTowardsUpper.transform.GetComponent<CharacterStats> () == target)
+						{
+							Debug.Log ("Now attack");
+							val = true;
+						}
+					}
 				}
 			}
 		}
-		*/
+
 		if (val)
 			lastKnownPosition = target.transform.position;
 
 		return val;
 	}
-
-
-
-
-
-
-
-
-
-
-
+	
 	public void LookAtTarget (Vector3 posToLook)
 	{
 		Vector3 dirToLook = posToLook - transform.position;
@@ -302,6 +291,7 @@ public class EnemyAI : MonoBehaviour
 		goToPos = false;
 		alertBehaviours.lookAtPoint = false;
 		commonBehaviour.initCheck = false;
+		charStats.hasCover = false;
 	}
 
 	public void AI_State_Chase ()
@@ -310,6 +300,7 @@ public class EnemyAI : MonoBehaviour
 		goToPos = false;
 		alertBehaviours.lookAtPoint = false;
 		commonBehaviour.initCheck = false;
+		charStats.hasCover = false;
 	}
 
 	public void AI_State_Search ()
@@ -319,6 +310,7 @@ public class EnemyAI : MonoBehaviour
 		goToPos = false;
 		alertBehaviours.lookAtPoint = false;
 		commonBehaviour.initCheck = false;
+		charStats.hasCover = false;
 	}
 
 	public void AI_State_OnAlert_RunList ()
@@ -327,6 +319,7 @@ public class EnemyAI : MonoBehaviour
 		charStats.run = true;
 		goToPos = false;
 		alertBehaviours.lookAtPoint = false;
+		charStats.hasCover = false;
 	}
 
 	public void AI_State_Attack ()
@@ -341,6 +334,26 @@ public class EnemyAI : MonoBehaviour
 		goToPos = false;
 		alertBehaviours.lookAtPoint = false;
 		commonBehaviour.initCheck = false;
+		charStats.hasCover = false;
+	}
+
+	public void AI_State_Cover ()
+	{
+		stateAI = StateAI.cover;
+		charStats.run = true;
+		goToPos = false;
+		alertBehaviours.lookAtPoint = false;
+		commonBehaviour.initCheck = false;
+	}
+
+	public void AI_State_DecideByStats ()
+	{
+		stateAI = StateAI.deciding;
+		charStats.run = false;
+		goToPos = false;
+		alertBehaviours.lookAtPoint = false;
+		commonBehaviour.initCheck = false;
+		charStats.hasCover = false;
 	}
 
 	/*

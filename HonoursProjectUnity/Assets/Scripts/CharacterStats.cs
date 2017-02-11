@@ -4,13 +4,18 @@ using System.Collections;
 public class CharacterStats : MonoBehaviour 
 {
 
-	public float health;
+	public float health = 100;
+	public int morale = 100;
+	public int suppresionLevel = 80;
+	public int unitRank = 0;
+
 	public float viewAngleLimit = 50.0f;
 	public int alertLevel;
 	public int team;
 	public bool selected;
 	public bool dead;
 	public bool crouch;
+	public bool hasCover;
 	public bool run;
 	public bool alert = true;
 	public bool aim;
@@ -78,8 +83,7 @@ public class CharacterStats : MonoBehaviour
 	public void ChangeToAlert (Vector3 _interest)
 	{
 		alert = true;
-		MoveToPosition (transform.position);
-		//plControl.moveToPosition = false;
+		plControl.moveToPosition = false;
 
 		enemyAI.GoOnAlert (_interest);
 	}
