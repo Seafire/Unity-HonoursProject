@@ -130,6 +130,15 @@ public class CharacterStats : MonoBehaviour
 	{
 		//plControl.RagdollCharacter ();
 
+		MonoBehaviour[] comp = GetComponents<MonoBehaviour> ();
+
+		for (int i = 0; i < comp.Length; i++)
+		{
+			comp[i].enabled = false;
+		}
+
+		this.enabled = true;
+		/*
 		enemyAI.commonBehaviour.enabled = false;
 		enemyAI.chaseBehaviour.enabled = false;
 		enemyAI.searchBehaviour.enabled = false;
@@ -137,7 +146,7 @@ public class CharacterStats : MonoBehaviour
 		enemyAI.alertBehaviours.enabled = false;
 		enemyAI.alliesBehaviour.enabled = false;
 		enemyAI.enabled = false;
-
+		*/
 		GetComponent<Collider> ().enabled = false;
 		GetComponent<Rigidbody> ().isKinematic = true;
 		GetComponent<NavMeshAgent> ().enabled = false;

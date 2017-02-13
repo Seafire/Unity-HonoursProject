@@ -8,6 +8,7 @@ using System.Collections.Generic;
 [RequireComponent(typeof  (AlertBehaviourMain))]
 [RequireComponent(typeof  (ChaseBehaviour))]
 [RequireComponent(typeof  (AllyBehaviour))]
+[RequireComponent(typeof  (RetreatBehaviour))]
 public class EnemyAI : MonoBehaviour
 {
 
@@ -54,6 +55,8 @@ public class EnemyAI : MonoBehaviour
 	public SearchBehaviour searchBehaviour;
 	[HideInInspector]
 	public AllyBehaviour alliesBehaviour;
+	[HideInInspector]
+	public RetreatBehaviour retreatBehaviour;
 
 	// States
 	public StateAI stateAI;
@@ -68,7 +71,8 @@ public class EnemyAI : MonoBehaviour
 		search,
 		deciding,
 		cover,
-		attack
+		attack,
+		retreat
 	}
 	
 	// Use this for initialization
@@ -84,8 +88,10 @@ public class EnemyAI : MonoBehaviour
 		alertBehaviours = GetComponent<AlertBehaviourMain> ();
 		searchBehaviour = GetComponent<SearchBehaviour> ();
 		alliesBehaviour = GetComponent<AllyBehaviour> ();
+		retreatBehaviour = GetComponent<RetreatBehaviour> ();
 
-		if (searchBehaviour) {
+		if (searchBehaviour)
+		{
 			Debug.Log ("The component is attached");
 		}
 
@@ -151,6 +157,17 @@ public class EnemyAI : MonoBehaviour
 			else
 				attackBehaviour.AttackFromCover ();
 			break;
+		case StateAI.retreat:
+			retreatBehaviour.RetreatAction ();
+			charStats.run = true;
+			charStats.aim = false;
+			break;
+		}
+
+		if (stateAI != StateAI.cover && stateAI != StateAI.attack)
+		{
+			if (attackBehaviour.currentCover != null)
+				attackBehaviour.currentCover.occupied = false;
 		}
 	}
 
@@ -369,6 +386,18 @@ public class EnemyAI : MonoBehaviour
 		alertBehaviours.lookAtPoint = false;
 		commonBehaviour.initCheck = false;
 		charStats.hasCover = false;
+	}
+
+	public void AI_State_Retreat ()
+	{
+		stateAI = StateAI.retreat;
+		charStats.crouch = false;
+		charStats.aim = false;
+		charStats.hasCover = false;
+		goToPos = false;
+		alertBehaviours.lookAtPoint = false;
+		commonBehaviour.initCheck = false;
+		attackBehaviour.findCoverPosition = false;
 	}
 
 	/*

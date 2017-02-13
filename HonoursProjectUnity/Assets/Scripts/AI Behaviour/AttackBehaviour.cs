@@ -25,7 +25,7 @@ public class AttackBehaviour : MonoBehaviour
 	public ParticleSystem muzzleFire;
 
 	// Cover Variables
-	private bool findCoverPosition;
+	public bool findCoverPosition;
 	public List <Transform> coverPositions = new List<Transform> ();
 	public List <Transform> ignorePositions = new List<Transform> ();
 	private ObjectDistanceComparer comparer;
@@ -64,7 +64,7 @@ public class AttackBehaviour : MonoBehaviour
 		}
 	}
 
-	void SortPosition (List<Transform> _positions)
+	public void SortPosition (List<Transform> _positions)
 	{
 		comparer = new ObjectDistanceComparer (this.transform);
 		_positions.Sort (comparer);

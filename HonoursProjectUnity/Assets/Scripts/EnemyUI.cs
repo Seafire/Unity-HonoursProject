@@ -7,7 +7,7 @@ public class EnemyUI : MonoBehaviour
 
 	public bool show = true;
 	public GameObject enemyPrefabUI;
-	private GameObject enemyUI;
+	public GameObject enemyUI;
 	private Text textUI;
 	private Text morale;
 	private Text suppresion;
