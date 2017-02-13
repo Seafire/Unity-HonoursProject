@@ -52,6 +52,18 @@ public class EnemySightSphere : MonoBehaviour
 					trackingTargets.Add (colStats);
 				}
 			}
+			else
+			{
+				EnemyAI otherAI = colStats.transform.GetComponent<EnemyAI> ();
+
+				if (otherAI != enemyAI)
+				{
+					if (!enemyAI.AlliesNear.Contains(otherAI))
+					{
+						enemyAI.AlliesNear.Add (otherAI);
+					}
+				}
+			}
 		}
 	}
 
@@ -65,6 +77,19 @@ public class EnemySightSphere : MonoBehaviour
 			{
 				Debug.Log ("Remove me");
 				trackingTargets.Remove (colStats);
+			}
+
+			if (colStats.transform.GetComponent<EnemyAI> ())
+			{
+				EnemyAI otherAI = colStats.transform.GetComponent<EnemyAI> ();
+
+				if (otherAI != enemyAI)
+				{
+					if (enemyAI.AlliesNear.Contains (otherAI))
+					{
+						enemyAI.AlliesNear.Remove (otherAI);
+					}
+				}
 			}
 		}
 	}

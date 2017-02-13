@@ -54,6 +54,29 @@ public class CharacterStats : MonoBehaviour
 			float scale = alertLevel * 0.05f;
 			alertDebugCube.localScale = new Vector3(scale, scale, scale);
 		}
+
+		if (morale < 0)
+		{
+			morale = 0;
+		}
+
+		if (health <= 0)
+		{
+			health = 0;
+
+			if (!dead)
+			{
+				dead = true;
+
+				if (enemyAI)
+				{
+					//enemyAI.AlliesNear.DecreaseAlliesMorale(30);
+					enemyAI.alliesBehaviour.DecreaseAlliesMorale (30);
+				}
+
+				KillCharacter ();
+			}
+		}
 	}
 
 	public void MoveToPosition (Vector3 position)
@@ -103,8 +126,21 @@ public class CharacterStats : MonoBehaviour
 		run = !run;
 	}
 
-	void KillCharacter()
+	public void KillCharacter()
 	{
-		dead = true;
+		//plControl.RagdollCharacter ();
+
+		enemyAI.commonBehaviour.enabled = false;
+		enemyAI.chaseBehaviour.enabled = false;
+		enemyAI.searchBehaviour.enabled = false;
+		enemyAI.attackBehaviour.enabled = false;
+		enemyAI.alertBehaviours.enabled = false;
+		enemyAI.alliesBehaviour.enabled = false;
+		enemyAI.enabled = false;
+
+		GetComponent<Collider> ().enabled = false;
+		GetComponent<Rigidbody> ().isKinematic = true;
+		GetComponent<NavMeshAgent> ().enabled = false;
+
 	}
 }

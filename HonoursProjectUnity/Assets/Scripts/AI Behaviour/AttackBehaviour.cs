@@ -375,7 +375,7 @@ public class AttackBehaviour : MonoBehaviour
 
 			for (int i = 0; i < enemyAI_Main.AlliesNear.Count; i++)
 			{
-				if (enemyAI_Main.AlliesNear[i].unitRank > enemyAI_Main.charStats.unitRank)
+				if (enemyAI_Main.AlliesNear[i].charStats.unitRank > enemyAI_Main.charStats.unitRank)
 				{
 					friendlies += 10;
 				}
@@ -410,6 +410,11 @@ public class AttackBehaviour : MonoBehaviour
 				enemyAI_Main.charStats.shooting = true;
 				timesShot++;
 				shootR = 0;
+
+				if (timesShot == timesToShoot - 1)
+				{
+					enemyAI_Main.alliesBehaviour.AlertEveryoneInRange (60);
+				}
 			}
 		}
 		else

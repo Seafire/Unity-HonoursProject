@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerControl : MonoBehaviour 
 {
@@ -15,15 +16,17 @@ public class PlayerControl : MonoBehaviour
 	public bool crouch;
 	public bool alert;
 
-	public float walkSpeed = 10.0f;
-	public float runSpeed = 20.0f;
-	public float crouchSpeed = 7.7f;
+	public float walkSpeed = 1.0f;
+	public float runSpeed = 3.0f;
+	public float crouchSpeed = 0.7f;
 
 	public float stopDistance = 0.1f;
 	public float maxStance = 0.9f;
 	public float minStance = 0.1f;
 	float targetStance;
 	float stance;
+
+	List<Rigidbody> ragdoll = new List<Rigidbody> ();
 
 	// Pathfinding
 	Vector3[] path;
@@ -41,7 +44,7 @@ public class PlayerControl : MonoBehaviour
 
 		agent.updateRotation = true;
 		//agent.angularSpeed = 500;
-		//agent.autoBraking = false;
+		agent.autoBraking = false;
 
 		if (GetComponentInChildren<EnemySightSphere> ())
 		{
@@ -53,35 +56,40 @@ public class PlayerControl : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		run = charStats.run;
-
-		if (moveToPosition) 
+		if (!charStats.dead)
 		{
-			agent.Resume ();
-			agent.updateRotation = true;
-			agent.SetDestination (destPosition);
+			run = charStats.run;
 
-			float distanceToTarget = Vector3.Distance(transform.position, destPosition);
-
-			if (distanceToTarget <= stopDistance)
+			if (moveToPosition) 
 			{
-				moveToPosition = false;
-				charStats.run = false;
+
+				agent.Resume ();
+				agent.autoBraking = false;
+				agent.updateRotation = true;
+				agent.SetDestination (destPosition);
+
+				float distanceToTarget = Vector3.Distance(transform.position, destPosition);
+
+				if (distanceToTarget < stopDistance)
+				{
+					Debug.Log ("I should only be here to move to Next Destination");
+					moveToPosition = false;
+					charStats.run = false;
+				}
 			}
-		}
-		else
-		{
-			// Stop the agent
-			agent.Stop ();
-			agent.updateRotation = false;
+			else
+			{
+				// Stop the agent
+				agent.autoBraking = true;
+				agent.Stop ();
+				agent.updateRotation = false;
+			}
 
-			Debug.Log ("I should only be here once I reach my Destination");
+			HandleSpeed ();
+			//HandleAiming ();
+			HandleAnimation ();
+			HandleStates ();
 		}
-
-		HandleSpeed ();
-		//HandleAiming ();
-		HandleAnimation ();
-		HandleStates ();
 	}
 
 	void SetUpAnimator ()
@@ -166,6 +174,7 @@ public class PlayerControl : MonoBehaviour
 		for (int i = 0; i < rigB.Length; i++)
 		{
 			rigB[i].isKinematic = true;
+			ragdoll.Add (rigB[i]);
 		}
 
 		for (int i = 0; i < cols.Length; i++)
@@ -176,5 +185,24 @@ public class PlayerControl : MonoBehaviour
 			}
 			cols[i].isTrigger = true;
 		}
+	}
+
+	public void RagdollCharacter ()
+	{
+		for (int i = 0; i < ragdoll.Count; i++)
+		{
+			ragdoll[i].isKinematic = false;
+			Collider col = ragdoll[i].GetComponent<Collider> ();
+			col.isTrigger = false;
+		}
+
+		StartCoroutine ("DisableAnimator");
+	}
+
+	IEnumerator DisableAnimator ()
+	{
+		yield return new WaitForEndOfFrame ();
+		anim.enabled = false;
+		this.enabled = false;
 	}
 }

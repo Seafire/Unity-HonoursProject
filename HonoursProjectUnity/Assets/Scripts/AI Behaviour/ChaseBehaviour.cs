@@ -14,10 +14,6 @@ public class ChaseBehaviour : MonoBehaviour
 	{
 		enemyAI_Main = GetComponent<EnemyAI> ();
 	}
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
 	// All actions if the enemy loses site of the player
 	public void Chase ()
@@ -60,6 +56,5 @@ public class ChaseBehaviour : MonoBehaviour
 				}
 			}
 		}
-		
 	}
 }

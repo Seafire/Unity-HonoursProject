@@ -7,6 +7,7 @@ using System.Collections.Generic;
 [RequireComponent(typeof  (SearchBehaviour))]
 [RequireComponent(typeof  (AlertBehaviourMain))]
 [RequireComponent(typeof  (ChaseBehaviour))]
+[RequireComponent(typeof  (AllyBehaviour))]
 public class EnemyAI : MonoBehaviour
 {
 
@@ -23,7 +24,9 @@ public class EnemyAI : MonoBehaviour
 	
 	public bool onPatrol;
 	public bool canChase;
-	public List<CharacterStats> AlliesNear = new List<CharacterStats> ();
+	public List<EnemyAI> AlliesNear = new List<EnemyAI> ();
+
+	bool updateAllies;
 
 	// Waypoints
 	public bool goToPos;
@@ -49,6 +52,8 @@ public class EnemyAI : MonoBehaviour
 	//[HideInInspector]
 	[HideInInspector]
 	public SearchBehaviour searchBehaviour;
+	[HideInInspector]
+	public AllyBehaviour alliesBehaviour;
 
 	// States
 	public StateAI stateAI;
@@ -77,6 +82,12 @@ public class EnemyAI : MonoBehaviour
 		chaseBehaviour = GetComponent<ChaseBehaviour> ();
 		attackBehaviour = GetComponent<AttackBehaviour> ();
 		alertBehaviours = GetComponent<AlertBehaviourMain> ();
+		searchBehaviour = GetComponent<SearchBehaviour> ();
+		alliesBehaviour = GetComponent<AllyBehaviour> ();
+
+		if (searchBehaviour) {
+			Debug.Log ("The component is attached");
+		}
 
 
 		enemyManager = GameObject.FindGameObjectWithTag ("GameController").GetComponent<EnemyManager> ();
@@ -122,7 +133,7 @@ public class EnemyAI : MonoBehaviour
 		case StateAI.search:
 			alertMultiplier = 0.3f;
 			TargetAvailable ();
-			commonBehaviour.DecreaseAlertLevel ();
+			GetComponent<CommonBehaviour> ().DecreaseAlertLevel ();
 			searchBehaviour.Search ();
 			break;
 		case StateAI.hasTarget:
@@ -149,6 +160,7 @@ public class EnemyAI : MonoBehaviour
 	{
 		if (target)
 		{
+			Debug.Log ("Hello");
 			if (SightRaycasts())
 			{
 				ChangeAIBehaviour("AI_State_HasTarget", 0);
@@ -180,10 +192,12 @@ public class EnemyAI : MonoBehaviour
 		// Exclude enemy and ragdoll mask
 		LayerMask excludeLayers = ~((1 << 11) | (1 << 10));
 
-		Debug.DrawRay (raycastStart, dir + new Vector3 (0, 1, 0));
+		Debug.DrawRay (raycastStart, dir);
 
-		if (Physics.Raycast (raycastStart, dir + new Vector3 (0, 1, 0), out hitTowardsLower, 50, excludeLayers)) 
+		if (Physics.Raycast (raycastStart, dir, out hitTowardsLower, 50)) 
 		{
+			Debug.Log ("I've hit a target");
+
 			if (hitTowardsLower.transform.GetComponent<CharacterStats>())
 			{
 				if (target)
@@ -196,7 +210,7 @@ public class EnemyAI : MonoBehaviour
 				}
 			}
 		}
-
+		/*
 		if (val == false)
 		{
 			//dir += new Vector3 (0, 1.6f, 0);
@@ -216,7 +230,7 @@ public class EnemyAI : MonoBehaviour
 				}
 			}
 		}
-
+*/
 		if (val)
 			lastKnownPosition = target.transform.position;
 
@@ -324,6 +338,7 @@ public class EnemyAI : MonoBehaviour
 
 	public void AI_State_Attack ()
 	{
+		alliesBehaviour.AlertAllies ();
 		stateAI = StateAI.attack;
 	}
 

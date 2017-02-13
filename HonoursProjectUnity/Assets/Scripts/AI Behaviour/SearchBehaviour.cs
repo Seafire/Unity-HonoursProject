@@ -56,7 +56,7 @@ public class SearchBehaviour : MonoBehaviour
 				{
 					possibleHidingAreas.Clear();
 					
-					Collider[] allColliders = Physics.OverlapSphere (transform.position, 20);
+					Collider[] allColliders = Physics.OverlapSphere (transform.position, 100);
 					
 					for (int i = 0; i < allColliders.Length; i++)
 					{
