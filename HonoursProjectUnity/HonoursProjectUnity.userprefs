@@ -1,20 +1,22 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\EnemyAI.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\DebugScript.cs">
     <Files>
-      <File FileName="Assets\Scripts\EnemyAI.cs" Line="400" Column="36" />
+      <File FileName="Assets\Scripts\EnemyAI.cs" Line="161" Column="1" />
       <File FileName="Assets\Scripts\AI Behaviour\AllyBehaviour.cs" Line="22" Column="6" />
-      <File FileName="Assets\Scripts\CharacterStats.cs" Line="131" Column="25" />
+      <File FileName="Assets\Scripts\CharacterStats.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\AI Behaviour\AlertBehaviourMain.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\AI Behaviour\ChaseBehaviour.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\AI Behaviour\CommonBehaviour.cs" Line="32" Column="3" />
+      <File FileName="Assets\Scripts\AI Behaviour\CommonBehaviour.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\AI Behaviour\SearchBehaviour.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\PlayerControl.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\AI Behaviour\AttackBehaviour.cs" Line="28" Column="31" />
+      <File FileName="Assets\Scripts\AI Behaviour\AttackBehaviour.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\EnemySightSphere.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Manager\LevelManager.cs" Line="25" Column="34" />
-      <File FileName="Assets\Scripts\AI Behaviour\RetreatBehaviour.cs" Line="126" Column="22" />
-      <File FileName="Assets\Scripts\EnemyUI.cs" Line="19" Column="39" />
+      <File FileName="Assets\Scripts\Manager\LevelManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\AI Behaviour\RetreatBehaviour.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\EnemyUI.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\DebugScript.cs" Line="24" Column="38" />
+      <File FileName="Assets\Scripts\Camera\WorldCamera.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
