@@ -9,6 +9,7 @@ using System.Collections.Generic;
 [RequireComponent(typeof  (ChaseBehaviour))]
 [RequireComponent(typeof  (AllyBehaviour))]
 [RequireComponent(typeof  (RetreatBehaviour))]
+[RequireComponent(typeof  (PointOfInterestBehaviour))]
 public class EnemyAI : MonoBehaviour
 {
 
@@ -26,6 +27,7 @@ public class EnemyAI : MonoBehaviour
 	public bool onPatrol;
 	public bool canChase;
 	public List<EnemyAI> AlliesNear = new List<EnemyAI> ();
+	public List<POI_Base> PointsOfInterest = new List<POI_Base> ();
 
 	bool updateAllies;
 
@@ -57,6 +59,8 @@ public class EnemyAI : MonoBehaviour
 	public AllyBehaviour alliesBehaviour;
 	[HideInInspector]
 	public RetreatBehaviour retreatBehaviour;
+	[HideInInspector]
+	public PointOfInterestBehaviour poiBehaviour;
 
 	// States
 	public StateAI stateAI;
@@ -72,7 +76,8 @@ public class EnemyAI : MonoBehaviour
 		deciding,
 		cover,
 		attack,
-		retreat
+		retreat,
+		dead
 	}
 	
 	// Use this for initialization
@@ -89,6 +94,7 @@ public class EnemyAI : MonoBehaviour
 		searchBehaviour = GetComponent<SearchBehaviour> ();
 		alliesBehaviour = GetComponent<AllyBehaviour> ();
 		retreatBehaviour = GetComponent<RetreatBehaviour> ();
+		poiBehaviour = GetComponent<PointOfInterestBehaviour> ();
 
 		if (searchBehaviour)
 		{
@@ -123,6 +129,7 @@ public class EnemyAI : MonoBehaviour
 			commonBehaviour.DecreaseAlertLevel ();
 			commonBehaviour.Patrol();
 			TargetAvailable ();
+			poiBehaviour.POI_Behaviour ();
 			break;
 		case StateAI.alert:
 			TargetAvailable ();

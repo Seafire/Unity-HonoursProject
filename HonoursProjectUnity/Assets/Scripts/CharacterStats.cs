@@ -24,6 +24,9 @@ public class CharacterStats : MonoBehaviour
 	private PlayerControl plControl;
 	private EnemyAI enemyAI;
 
+	[HideInInspector]
+	public POI_DeadBody enableOnDeath;
+
 	public Transform alertDebugCube;
 
 	// Use this for initialization
@@ -150,6 +153,7 @@ public class CharacterStats : MonoBehaviour
 		GetComponent<Collider> ().enabled = false;
 		GetComponent<Rigidbody> ().isKinematic = true;
 		GetComponent<NavMeshAgent> ().enabled = false;
+		enableOnDeath.enabled = true;
 
 	}
 }

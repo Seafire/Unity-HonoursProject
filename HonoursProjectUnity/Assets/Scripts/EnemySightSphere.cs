@@ -65,6 +65,16 @@ public class EnemySightSphere : MonoBehaviour
 				}
 			}
 		}
+
+		if (col.GetComponent<POI_Base> ())
+		{
+			POI_Base poi = col.GetComponent<POI_Base> ();
+
+			if (!enemyAI.PointsOfInterest.Contains (poi))
+			{
+				enemyAI.PointsOfInterest.Add (poi);
+			}
+		}
 	}
 
 	public void OnTriggerExit (Collider col)
@@ -90,6 +100,16 @@ public class EnemySightSphere : MonoBehaviour
 						enemyAI.AlliesNear.Remove (otherAI);
 					}
 				}
+			}
+		}
+
+		if (col.GetComponent<POI_Base> ())
+		{
+			POI_Base poi = col.GetComponent<POI_Base> ();
+			
+			if (enemyAI.PointsOfInterest.Contains (poi))
+			{
+				enemyAI.PointsOfInterest.Remove (poi);
 			}
 		}
 	}

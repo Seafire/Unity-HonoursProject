@@ -1,22 +1,12 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\DebugScript.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="d:\Repositories\HonoursProjectUnity\HonoursProjectUnity\Assets\Scripts\CharacterStats.cs">
     <Files>
-      <File FileName="Assets\Scripts\EnemyAI.cs" Line="161" Column="1" />
-      <File FileName="Assets\Scripts\AI Behaviour\AllyBehaviour.cs" Line="22" Column="6" />
-      <File FileName="Assets\Scripts\CharacterStats.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\AI Behaviour\AlertBehaviourMain.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\AI Behaviour\ChaseBehaviour.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\AI Behaviour\CommonBehaviour.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\AI Behaviour\SearchBehaviour.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\PlayerControl.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\AI Behaviour\AttackBehaviour.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\EnemySightSphere.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Manager\LevelManager.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\AI Behaviour\RetreatBehaviour.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\EnemyUI.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\DebugScript.cs" Line="24" Column="38" />
-      <File FileName="Assets\Scripts\Camera\WorldCamera.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\POI_DeadBody.cs" Line="16" Column="1" />
+      <File FileName="Assets\Scripts\EnemyAI.cs" Line="136" Column="29" />
+      <File FileName="Assets\Scripts\AI Behaviour\PointOfInterestBehaviour.cs" Line="41" Column="5" />
+      <File FileName="Assets\Scripts\EnemySightSphere.cs" Line="105" Column="3" />
+      <File FileName="d:\Repositories\HonoursProjectUnity\HonoursProjectUnity\Assets\Scripts\CharacterStats.cs" Line="156" Column="24" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
