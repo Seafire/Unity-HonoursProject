@@ -77,6 +77,8 @@ public class EnemyAI : MonoBehaviour
 		cover,
 		attack,
 		retreat,
+		unconsious,
+		searchLocation,
 		dead
 	}
 	
@@ -95,6 +97,15 @@ public class EnemyAI : MonoBehaviour
 		alliesBehaviour = GetComponent<AllyBehaviour> ();
 		retreatBehaviour = GetComponent<RetreatBehaviour> ();
 		poiBehaviour = GetComponent<PointOfInterestBehaviour> ();
+
+		commonBehaviour.Init ();
+		chaseBehaviour.Init ();
+		attackBehaviour.Init ();
+		alertBehaviours.Init ();
+		searchBehaviour.Init ();
+		alliesBehaviour.Init ();
+		retreatBehaviour.Init ();
+		poiBehaviour.Init ();
 
 		if (searchBehaviour)
 		{
@@ -167,6 +178,20 @@ public class EnemyAI : MonoBehaviour
 		case StateAI.retreat:
 			retreatBehaviour.RetreatAction ();
 			charStats.run = true;
+			charStats.aim = false;
+			break;
+		case StateAI.unconsious:
+			charStats.run = false;
+			charStats.aim = false;
+			charStats.hasCover = false;
+			goToPos = false;
+			alertBehaviours.lookAtPoint = false;
+			commonBehaviour.initCheck = false;
+			break;
+		case StateAI.searchLocation:
+			TargetAvailable ();
+			searchBehaviour.SearchTargetLocationOrBody ();
+			charStats.run = false;
 			charStats.aim = false;
 			break;
 		}
@@ -405,6 +430,24 @@ public class EnemyAI : MonoBehaviour
 		alertBehaviours.lookAtPoint = false;
 		commonBehaviour.initCheck = false;
 		attackBehaviour.findCoverPosition = false;
+	}
+
+	public void AI_State_SearchLocation (Vector3 targetLocation, CharacterStats body)
+	{
+		stateAI = StateAI.searchLocation;
+
+		if (body)
+		{
+			searchBehaviour.curBody = body;
+		}
+		else
+		{
+			searchBehaviour.targetLocation = targetLocation;
+		}
+
+		searchBehaviour.searchPhase = 0;
+		charStats.hasCover = false;
+		goToPos = false;
 	}
 
 	/*

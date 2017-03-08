@@ -26,7 +26,7 @@ public class CommonBehaviour : MonoBehaviour
 	EnemyAI enemyAI_Main;
 	
 	// Use this for initialization
-	void Start () 
+	public void Init () 
 	{
 		enemyAI_Main = GetComponent<EnemyAI> ();
 	}

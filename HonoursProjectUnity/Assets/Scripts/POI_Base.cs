@@ -8,6 +8,7 @@ public class POI_Base : MonoBehaviour
 	public enum TypePOI
 	{
 		deadBody,
-		other
+		other,
+		unconsious
 	}
 }

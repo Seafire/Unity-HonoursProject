@@ -6,7 +6,7 @@ public class PlayerControl : MonoBehaviour
 {
 
 	private Animator anim;
-	private NavMeshAgent agent;
+	public NavMeshAgent agent;
 	private CharacterStats charStats;
 
 	public bool moveToPosition;
@@ -33,7 +33,7 @@ public class PlayerControl : MonoBehaviour
 	int targetIndex;
 
 	// Use this for initialization
-	void Start () 
+	public void Init() 
 	{
 		//anim = GetComponent<Animator> ();
 		//SetUpAnimator ();
@@ -54,7 +54,7 @@ public class PlayerControl : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update () 
+	public void Tick () 
 	{
 		if (!charStats.dead)
 		{

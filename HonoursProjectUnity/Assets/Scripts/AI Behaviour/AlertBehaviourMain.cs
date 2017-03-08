@@ -25,11 +25,10 @@ public class AlertBehaviourMain : MonoBehaviour
 	EnemyAI enemyAI_Main;
 
 	// Use this for initialization
-	void Start () 
+	public void Init () 
 	{
 		enemyAI_Main = GetComponent<EnemyAI> ();
 	}
-
 	// All actions of the enemy is alerted by the player
 	public void Alert ()
 	{

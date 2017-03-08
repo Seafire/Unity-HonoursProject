@@ -1,46 +1,6 @@
 Base path: C:/Program Files/Unity/Editor/Data
-Pipe name: \\.\pipe\UnityShaderCompiler-64bit-2-16780
+Pipe name: \\.\pipe\UnityShaderCompiler-64bit-2-11312
 Cmd: getPlatforms
-Cmd: compileSnippet
-  api=1 type=0 insize=982 outsize=763 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_ON _EMISSION ok=1
-Cmd: compileSnippet
-  api=4 type=0 insize=982 outsize=5393 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF _EMISSION VERTEXLIGHT_ON ok=1
-Cmd: compileSnippet
-  api=4 type=0 insize=982 outsize=5751 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF _EMISSION VERTEXLIGHT_ON ok=1
-Cmd: compileSnippet
-  api=1 type=1 insize=982 outsize=3775 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF _EMISSION ok=1
-Cmd: compileSnippet
-  api=4 type=0 insize=1152 outsize=3654 kw=LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_ON _EMISSION ok=1
-Cmd: compileSnippet
-  api=4 type=0 insize=1152 outsize=3654 kw=LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_ON _EMISSION UNITY_HDR_ON ok=1
-Cmd: compileSnippet
-  api=4 type=1 insize=1152 outsize=8180 kw=LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_ON _EMISSION ok=1
-Cmd: compileSnippet
-  api=1 type=1 insize=1152 outsize=2540 kw=LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_ON _EMISSION UNITY_HDR_ON ok=1
-Cmd: compileSnippet
-  api=4 type=1 insize=530 outsize=2972 kw=_EMISSION ok=1
-Cmd: compileSnippet
-  api=1 type=0 insize=886 outsize=851 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF _EMISSION ok=1
-Cmd: compileSnippet
-  api=4 type=0 insize=886 outsize=3654 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_ON _EMISSION ok=1
-Cmd: compileSnippet
-  api=1 type=0 insize=886 outsize=1345 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF _EMISSION VERTEXLIGHT_ON ok=1
-Cmd: compileSnippet
-  api=4 type=0 insize=886 outsize=3654 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_ON _EMISSION VERTEXLIGHT_ON ok=1
-Cmd: compileSnippet
-  api=1 type=0 insize=886 outsize=912 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_ON _EMISSION VERTEXLIGHT_ON ok=1
-Cmd: compileSnippet
-  api=8 type=0 insize=886 outsize=9709 kw=DIRECTIONAL SHADOWS_SCREEN SHADOWS_NATIVE LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF _EMISSION VERTEXLIGHT_ON ok=1
-Cmd: compileSnippet
-  api=1 type=1 insize=886 outsize=3824 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_ON _EMISSION ok=1
-Cmd: compileSnippet
-  api=1 type=1 insize=886 outsize=3937 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_ON _EMISSION ok=1
-Cmd: compileSnippet
-  api=8 type=0 insize=530 outsize=3380 kw=_EMISSION ok=1
-Cmd: compileSnippet
-  api=1 type=0 insize=1482 outsize=335 kw=SOFTPARTICLES_ON ok=1
-Cmd: compileSnippet
-  api=8 type=1 insize=1482 outsize=1227 kw=SOFTPARTICLES_OFF ok=1
 Unhandled exception: Readfile from pipe failed. GLE=The pipe has been ended.
 
 

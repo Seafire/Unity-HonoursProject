@@ -1,12 +1,16 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="d:\Repositories\HonoursProjectUnity\HonoursProjectUnity\Assets\Scripts\CharacterStats.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\AI Behaviour\SearchBehaviour.cs">
     <Files>
-      <File FileName="Assets\Scripts\POI_DeadBody.cs" Line="16" Column="1" />
-      <File FileName="Assets\Scripts\EnemyAI.cs" Line="136" Column="29" />
-      <File FileName="Assets\Scripts\AI Behaviour\PointOfInterestBehaviour.cs" Line="41" Column="5" />
-      <File FileName="Assets\Scripts\EnemySightSphere.cs" Line="105" Column="3" />
-      <File FileName="d:\Repositories\HonoursProjectUnity\HonoursProjectUnity\Assets\Scripts\CharacterStats.cs" Line="156" Column="24" />
+      <File FileName="Assets\Scripts\EnemyAI.cs" Line="435" Column="82" />
+      <File FileName="Assets\Scripts\POI_Unconsious.cs" Line="11" Column="51" />
+      <File FileName="Assets\Scripts\CharacterStats.cs" Line="89" Column="45" />
+      <File FileName="Assets\Scripts\POI_DeadBody.cs" Line="11" Column="31" />
+      <File FileName="Assets\Scripts\PlayerControl.cs" Line="9" Column="8" />
+      <File FileName="Assets\Scripts\AI Behaviour\AllyBehaviour.cs" Line="74" Column="60" />
+      <File FileName="Assets\Scripts\AI Behaviour\PointOfInterestBehaviour.cs" Line="99" Column="22" />
+      <File FileName="Assets\Scripts\POI_Base.cs" Line="12" Column="13" />
+      <File FileName="Assets\Scripts\AI Behaviour\SearchBehaviour.cs" Line="210" Column="81" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

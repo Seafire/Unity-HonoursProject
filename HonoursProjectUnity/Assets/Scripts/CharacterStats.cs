@@ -5,6 +5,7 @@ public class CharacterStats : MonoBehaviour
 {
 
 	public float health = 100;
+	public float stamina = 100;
 	public int morale = 100;
 	public int suppresionLevel = 80;
 	public int unitRank = 0;
@@ -13,6 +14,7 @@ public class CharacterStats : MonoBehaviour
 	public int alertLevel;
 	public int team;
 	public bool selected;
+	public bool unconsious;
 	public bool dead;
 	public bool crouch;
 	public bool hasCover;
@@ -24,8 +26,12 @@ public class CharacterStats : MonoBehaviour
 	private PlayerControl plControl;
 	private EnemyAI enemyAI;
 
+	private float stTimer = 0;		/* Timer used for stamina */
+
 	[HideInInspector]
 	public POI_DeadBody enableOnDeath;
+	[HideInInspector]
+	public POI_Unconsious enableOnUnconsious;
 
 	public Transform alertDebugCube;
 
@@ -33,6 +39,7 @@ public class CharacterStats : MonoBehaviour
 	void Start () 
 	{
 		health = 100.0f;
+		stamina = 100.0f;
 
 		plControl = GetComponent<PlayerControl>();
 
@@ -40,12 +47,15 @@ public class CharacterStats : MonoBehaviour
 		{
 			enemyAI = GetComponent <EnemyAI> ();
 		}
+
+		plControl.Init ();
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
 		//selectCube.SetActive (selected);
+		plControl.Tick ();
 
 		if (run) 
 		{
@@ -75,9 +85,49 @@ public class CharacterStats : MonoBehaviour
 				{
 					//enemyAI.AlliesNear.DecreaseAlliesMorale(30);
 					enemyAI.alliesBehaviour.DecreaseAlliesMorale (30);
+					enemyAI.alliesBehaviour.AddInterestOnAlliesPOI (enableOnDeath.transform.GetComponent<POI_Base> ());
+					enemyAI.stateAI = EnemyAI.StateAI.dead;
 				}
 
 				KillCharacter ();
+			}
+		}
+
+		if (!unconsious)
+		{
+			if (stamina <= 0)
+			{
+				stamina = 0;
+
+				enemyAI.stateAI = EnemyAI.StateAI.unconsious;
+				enemyAI.alliesBehaviour.AddInterestOnAlliesPOI (enableOnDeath.transform.GetComponent<POI_Base> ());
+				enableOnUnconsious.enabled = true;
+				// plControl.RagdollCharacter ();
+				plControl.agent.Stop ();
+				plControl.agent.enabled = false;
+				unconsious = true;
+				alert = true;
+				alertLevel = 5;
+			}
+		}
+		else
+		{
+			stTimer += Time.deltaTime;
+			if (stTimer > 1)
+			{
+				stamina++;
+				stTimer = 0;
+			}
+
+			if (stamina > 99)
+			{
+				unconsious = false;
+				Vector3 curPos = enableOnUnconsious.transform.position;
+				transform.position = curPos;
+
+				plControl.agent.enabled = true;
+				plControl.moveToPosition = false;
+				// plControl.InitRagdoll ();
 			}
 		}
 	}

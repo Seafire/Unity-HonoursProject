@@ -7,7 +7,7 @@ public class AllyBehaviour : MonoBehaviour
 	EnemyAI enemyAI_Main;
 	
 	// Use this for initialization
-	void Start () 
+	public void Init () 
 	{
 		enemyAI_Main = GetComponent<EnemyAI> ();
 	}
@@ -59,6 +59,20 @@ public class AllyBehaviour : MonoBehaviour
 			for (int i = 0; i < enemyAI_Main.AlliesNear.Count; i ++)
 			{
 				enemyAI_Main.AlliesNear[i].charStats.morale -= _amount;
+			}
+		}
+	}
+
+	public void AddInterestOnAlliesPOI (POI_Base poi)
+	{
+		if (enemyAI_Main.AlliesNear.Count > 0)
+		{
+			for (int i = 0; i < enemyAI_Main.AlliesNear.Count; i++)
+			{
+				if (!enemyAI_Main.AlliesNear[i].PointsOfInterest.Contains (poi))
+				{
+					enemyAI_Main.AlliesNear[i].PointsOfInterest.Add (poi);
+				}
 			}
 		}
 	}

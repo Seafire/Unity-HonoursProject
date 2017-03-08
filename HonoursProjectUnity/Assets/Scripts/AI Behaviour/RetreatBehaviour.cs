@@ -20,7 +20,7 @@ public class RetreatBehaviour : MonoBehaviour
 	EnemyAI enemyAI_Main;
 	
 	// Use this for initialization
-	void Start () 
+	public void Init () 
 	{
 		levelManager = LevelManager.GetInstance ();
 		enemyAI_Main = GetComponent<EnemyAI> ();

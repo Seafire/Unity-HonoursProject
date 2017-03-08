@@ -21,10 +21,16 @@ public class SearchBehaviour : MonoBehaviour
 	public float delayNewBehaviour = 3.0f;
 	private float timeNewBehaviour;
 
+	[HideInInspector]
+	public CharacterStats curBody;
+	[HideInInspector]
+	public Vector3 targetLocation;
+	public int searchPhase;
+
 	EnemyAI enemyAI_Main;
 	
 	// Use this for initialization
-	void Start () 
+	public void Init () 
 	{
 		enemyAI_Main = GetComponent<EnemyAI> ();
 	}
@@ -150,7 +156,7 @@ public class SearchBehaviour : MonoBehaviour
 					if (disToPos < 2)
 					{
 						int ranVal = Random.Range (0, 11);
-						decideBehaviour = (ranVal <5);
+						decideBehaviour = (ranVal < 5);
 						
 						if (indexSearchPos < positionsArroundUnit.Count - 1)
 						{
@@ -175,6 +181,65 @@ public class SearchBehaviour : MonoBehaviour
 					}
 				}
 			}
+		}
+	}
+
+	public void SearchTargetLocationOrBody ()
+	{
+		if (curBody)
+		{
+			targetLocation = curBody.enableOnUnconsious.transform.position;
+		}
+
+		switch (searchPhase)
+		{
+		case 0:
+
+			enemyAI_Main.LookAtTarget (targetLocation);
+			enemyAI_Main.plControl.moveToPosition = false;
+
+			timeNewBehaviour += Time.deltaTime;
+
+			if (timeNewBehaviour > 4)
+			{
+				searchPhase++;
+			}
+			break;
+		case 1:
+			enemyAI_Main.charStats.MoveToPosition (targetLocation);
+			float distanceToTarget = Vector3.Distance (transform.position, targetLocation);
+			if (distanceToTarget < 2)
+			{
+
+				enemyAI_Main.charStats.alert = true;
+				enemyAI_Main.charStats.alertLevel = 2;
+				enemyAI_Main.charStats.crouch = true;
+
+				timeNewBehaviour += Time.deltaTime;
+
+				if (timeNewBehaviour > 4)
+				{
+					curBody.stamina = 100;
+					curBody = null;
+
+					enemyAI_Main.plControl.moveToPosition = false;
+
+					searchPhase++;
+
+					timeNewBehaviour = 0;
+				}
+			}
+			break;
+		case 2:
+			timeNewBehaviour += Time.deltaTime;
+
+			if (timeNewBehaviour > 8)
+			{
+				enemyAI_Main.AI_State_Normal ();
+
+				timeNewBehaviour = 0;
+			}
+			break;
 		}
 	}
 }

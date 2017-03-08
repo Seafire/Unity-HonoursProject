@@ -7,7 +7,7 @@ public class PointOfInterestBehaviour : MonoBehaviour
 	EnemyAI enemyAI_Main;
 	
 	// Use this for initialization
-	void Start () 
+	public void Init () 
 	{
 		enemyAI_Main = GetComponent<EnemyAI> ();
 	}
@@ -71,6 +71,43 @@ public class PointOfInterestBehaviour : MonoBehaviour
 			}
 			break;
 		case POI_Base.TypePOI.other:
+			break;
+		case POI_Base.TypePOI.unconsious:
+
+			POI_Unconsious uncon = poi.transform.GetComponent<POI_Unconsious> ();
+
+			if (uncon.isActiveAndEnabled)
+			{
+				Vector3 directionTowardsPOI = uncon.transform.position - transform.position;
+				float angleTowardsTarget = Vector3.Angle (transform.forward, directionTowardsPOI.normalized);
+
+				if (angleTowardsTarget < enemyAI_Main.charStats.viewAngleLimit)
+				{
+					Vector3 origin = transform.position + new Vector3 (0.0f, 1.0f, 0.0f);
+					Vector3 rayDirection = uncon.transform.position - origin;
+
+					RaycastHit hit;
+
+					if (Physics.Raycast (origin, rayDirection, out hit, 50))
+					{
+						if (hit.transform.Equals (uncon.transform) || hit.transform.GetComponentInParent<CharacterStats> ())
+						{
+							if (hit.transform.GetComponentInParent<CharacterStats> ().unconsious)
+							{
+								enemyAI_Main.lastKnownPosition = uncon.transform.position;
+
+								enemyAI_Main.AI_State_SearchLocation (Vector3.zero, uncon.owner);
+
+								enemyAI_Main.PointsOfInterest.Remove (poi);
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				enemyAI_Main.PointsOfInterest.Remove (poi);
+			}
 			break;
 		}
 	}
