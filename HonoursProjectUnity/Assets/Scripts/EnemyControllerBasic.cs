@@ -81,15 +81,17 @@ public class EnemyControllerBasic : MonoBehaviour
 			 *  Add end Level - Basic
 			 *  Predication Level complete
 			 *  Set up all waypoints
-			 *  Create seconadary waypoints for enemies
+			 *  Create secondary waypoints for enemies
 			 *  Create a system to change between waypoints after each route is complete - can be random as all routes start and end at the same point - DONE
 			 *  Create more advanced method for updating waypoints
 			 *  Only add alterate midpoint routes so it can switch each cycle
 			 *  Ajust waypoint wait times each loop - DONE - Updates orders of each enemies and ajusts the wait times - DONE
+			 *  Think about setting up order delays and wait time for individual enemies
 			 * 	Extra - alter look at points - DONE
+			 *  Add better method for adding extra waypoints - System for altering 2 waypoint enemies compared to 3
+			 *  Only after everything else is done
+			 *  Think about Fuzzy Logic for responses to player detection
 			 */
-
-
 
 		}
 	}
@@ -138,23 +140,26 @@ public class EnemyControllerBasic : MonoBehaviour
 					}
 				}
 
-				orderDelay -= Time.deltaTime;
-
-				if (orderDelay <= 0)
+				if (defaultEnemies[i].alterWaitTime)
 				{
-					int delay1 = Random.Range(2, maxWaitTime - 4);
-					maxWaitTime -= delay1;
-					int delay2 = Random.Range(2, maxWaitTime - 3);
-					maxWaitTime -= delay2;
-					int delay3 = Random.Range(2, 6);
+					orderDelay -= Time.deltaTime;
 
-					defaultEnemies[i].waypoints[0].waitTime = delay1;
-					defaultEnemies[i].waypoints[1].waitTime = delay2;
-					defaultEnemies[i].waypoints[2].waitTime = maxWaitTime;
+					if (orderDelay <= 0)
+					{
+						int delay1 = Random.Range(2, maxWaitTime - 4);
+						maxWaitTime -= delay1;
+						int delay2 = Random.Range(2, maxWaitTime - 3);
+						maxWaitTime -= delay2;
+						int delay3 = Random.Range(2, 6);
 
-					orderDelay = Random.Range(15, 30);
-					maxWaitTime = 12;
+						defaultEnemies[i].waypoints[0].waitTime = delay1;
+						defaultEnemies[i].waypoints[1].waitTime = delay2;
+						defaultEnemies[i].waypoints[2].waitTime = maxWaitTime;
 
+						orderDelay = Random.Range(15, 30);
+						maxWaitTime = 12;
+
+					}
 				}
 			}
 		}

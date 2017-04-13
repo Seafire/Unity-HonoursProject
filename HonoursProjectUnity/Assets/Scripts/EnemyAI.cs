@@ -26,6 +26,7 @@ public class EnemyAI : MonoBehaviour
 	
 	public bool onPatrol;
 	public bool canChase;
+	public bool alterWaitTime;
 	public List<EnemyAI> AlliesNear = new List<EnemyAI> ();
 	public List<POI_Base> PointsOfInterest = new List<POI_Base> ();
 	
