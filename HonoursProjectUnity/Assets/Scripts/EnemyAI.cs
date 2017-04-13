@@ -28,6 +28,8 @@ public class EnemyAI : MonoBehaviour
 	public bool canChase;
 	public List<EnemyAI> AlliesNear = new List<EnemyAI> ();
 	public List<POI_Base> PointsOfInterest = new List<POI_Base> ();
+	
+	public List<Waypoints> waypoints = new List<Waypoints> ();
 
 	bool updateAllies;
 
@@ -128,6 +130,11 @@ public class EnemyAI : MonoBehaviour
 		}
 
 		sightDistance = GetComponentInChildren<EnemySightSphere> ().GetComponent<SphereCollider> ().radius;
+
+		if (waypoints.Count > 0)
+		{
+
+		}
 	}
 	
 	// Update is called once per frame
@@ -450,6 +457,9 @@ public class EnemyAI : MonoBehaviour
 		goToPos = false;
 	}
 
+	//public float getWaitTime() {return 1;}
+	//public float setWaitTime(float newTime){newTime = newTime;}
+
 	/*
 	 * 
 	 * --EXTRA WAYPOINT CHECK-- 
@@ -467,7 +477,7 @@ public class EnemyAI : MonoBehaviour
  */
 
 [System.Serializable]
-public struct Waypoints
+public class Waypoints
 {
 	public Transform targetDestination;
 	public float waitTime;
@@ -477,4 +487,5 @@ public struct Waypoints
 	public bool overrideAnim;
 	public string[] animRoutines;
 	public bool stopList;
+	public bool extraWaypoint;
 }

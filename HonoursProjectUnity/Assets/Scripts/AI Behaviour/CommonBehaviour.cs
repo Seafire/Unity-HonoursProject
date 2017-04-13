@@ -14,11 +14,12 @@ public class CommonBehaviour : MonoBehaviour
 
 	// Waypoints
 	public int indexWaypoint;
-	public List<Waypoints> waypoints = new List<Waypoints> ();
 	// Wait time for Waypoint
 	public bool circularList;
 	bool decendingList;
 	float waitTime;
+
+	public int getIndexList() { return indexWaypoint; }
 
 	// Look Rotation
 	Quaternion targetRot;
@@ -47,7 +48,7 @@ public class CommonBehaviour : MonoBehaviour
 			switch (listCase)
 			{
 			case 0:
-				WaitTimerForEachWaypoint (waypoint, waypoints);
+				WaitTimerForEachWaypoint (waypoint, enemyAI_Main.waypoints);
 				break;
 			case 1:
 				WaitTimerForEachExtraBehaviour (waypoint, enemyAI_Main.alertBehaviours.onAlertBehaviour);
@@ -200,9 +201,9 @@ public class CommonBehaviour : MonoBehaviour
 
 	public void Patrol()
 	{
-		if (waypoints.Count > 0) 
+		if (enemyAI_Main.waypoints.Count > 0) 
 		{
-			Waypoints curWaypoint = waypoints[indexWaypoint];
+			Waypoints curWaypoint = enemyAI_Main.waypoints[indexWaypoint];
 			
 			if (!enemyAI_Main.goToPos)
 			{

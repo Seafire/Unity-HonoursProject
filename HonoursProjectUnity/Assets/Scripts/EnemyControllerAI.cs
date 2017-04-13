@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class EnemyControllerAI : MonoBehaviour
 {
+	// The max number of enemies that will be deployed
+	public int maxEnemies;
+
 	// Access to header of patrols containing waypoints and lookAtPoints
 	public List<Routes> Patrol = new List<Routes> ();
 	// Use this for initialization
@@ -21,6 +24,8 @@ public class EnemyControllerAI : MonoBehaviour
 				continue;
 			Patrol[i].waypoint = Patrol[i].waypoints.GetComponentsInChildren<Transform> ();
 		}
+
+		maxEnemies = 9;
 
 	}
 	
