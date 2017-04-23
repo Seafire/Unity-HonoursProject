@@ -52,7 +52,7 @@ public class MousePoint : MonoBehaviour
 	void Update () 
 	{
 		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-
+		var layerMask = ~((1 << 12) | (1 << 10) | (1 << 9));
 
 		if (Physics.Raycast(ray, out hit, 1000))
 		{

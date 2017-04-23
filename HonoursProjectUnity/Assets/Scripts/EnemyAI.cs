@@ -217,7 +217,6 @@ public class EnemyAI : MonoBehaviour
 	{
 		if (target)
 		{
-			Debug.Log ("Hello");
 			if (SightRaycasts())
 			{
 				ChangeAIBehaviour("AI_State_HasTarget", 0);

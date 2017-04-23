@@ -14,6 +14,8 @@ public class Unit : MonoBehaviour
 	
 	public bool isWalkable = true;
 
+	public EnemyAI sleepTar;
+
 	public Transform target;
 	float speed = 100;
 	Vector3[] path;
@@ -114,6 +116,27 @@ public class Unit : MonoBehaviour
 				CharacterStats selectedUnit = GetComponent <CharacterStats> ();
 				selectedUnit.MoveToPosition(MousePoint.RightMouseClick);
 			}
+
+			TargetAvailable();
+		}
+	}
+
+	void TargetAvailable ()
+	{
+		if (!sleepTar) 
+		{
+			return;
+		}
+		else if (sleepTar)
+		{
+			if (Input.GetKey (KeyCode.Z))
+			{
+				Debug.Log ("Sleep");
+				sleepTar.charStats.stamina = 0;
+				//ChangeAIBehaviour("AI_State_HasTarget", 0);
+			}
+
+			sleepTar = null;
 		}
 	}
 }

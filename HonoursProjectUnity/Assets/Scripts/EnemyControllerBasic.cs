@@ -109,7 +109,6 @@ public class EnemyControllerBasic : MonoBehaviour
 				 * Alter the waypoints here 
 				 * Need to delay the update to waypoints
 				 */
-				Debug.Log (defaultEnemies[i].commonBehaviour.getIndexList());
 				// Set the extra waypoint
 				if (defaultEnemies[i].commonBehaviour.getIndexList() == 2 || defaultEnemies[i].commonBehaviour.getIndexList() == 0)
 				{
