@@ -9,6 +9,7 @@ public class PlayerSightController : MonoBehaviour
 	EnemyAI enemyAI;
 	Unit unit;
 	CharacterStats charStats;
+	Projector proMaterial;
 	
 	public List<EnemyAI> trackingTargets = new List<EnemyAI> ();
 
@@ -17,6 +18,7 @@ public class PlayerSightController : MonoBehaviour
 	{
 		unit = GetComponentInParent<Unit> ();
 		charStats = GetComponentInParent<CharacterStats> ();
+		proMaterial = GetComponent<Projector> ();
 	}
 	
 	// Update is called once per frame
@@ -33,6 +35,7 @@ public class PlayerSightController : MonoBehaviour
 
 				Debug.Log ("I have the enemy in sights");
 				unit.sleepTar = trackingTargets[i];
+				proMaterial.material.color = Color.green;
 
 				// Set a variable to allow sleep to effect enemy
 				// Add variable to Unit script as only applies to unit
@@ -45,9 +48,10 @@ public class PlayerSightController : MonoBehaviour
 			}
 		}
 
-		if (trackingTargets == null) 
+		if (trackingTargets.Count == 0) 
 		{
 			unit.sleepTar = null;
+			proMaterial.material.color = Color.red;
 		}
 	}
 
