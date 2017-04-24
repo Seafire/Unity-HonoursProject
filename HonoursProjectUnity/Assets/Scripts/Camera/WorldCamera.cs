@@ -61,7 +61,7 @@ public class WorldCamera : MonoBehaviour
 		//Initialize the camera height
 		cameraHeight = transform.position.y;
 		// Initialize as new empty gameobject
-		scrollAngle = new GameObject();
+	//	scrollAngle = new GameObject();
 	}
 
 	void LateUpdate()
@@ -69,7 +69,7 @@ public class WorldCamera : MonoBehaviour
 		// Controls the camera rotation with the mouse
 		HandleMouseRotation ();
 		// Controls the scrolling of the camera
-		ApplyScroll ();
+		// ApplyScroll ();
 		// If the user has interacted with the scene through input
 		if(CheckIfUserCameraInput())
 		{
@@ -87,10 +87,12 @@ public class WorldCamera : MonoBehaviour
 			}
 		}
 		// Applies the camera scroll
-		ApplyCameraY ();
+		// ApplyCameraY ();
 		// Set the current position of the mouse
 		mouseX = Input.mousePosition.x;
 		mouseY = Input.mousePosition.y;
+
+		
 	}
 
 	void ApplyScroll()

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 [RequireComponent(typeof  (AllyBehaviour))]
 [RequireComponent(typeof  (RetreatBehaviour))]
 [RequireComponent(typeof  (PointOfInterestBehaviour))]
+[RequireComponent(typeof  (UnconsiousBehaviour))]
 public class EnemyAI : MonoBehaviour
 {
 
@@ -64,6 +65,8 @@ public class EnemyAI : MonoBehaviour
 	public RetreatBehaviour retreatBehaviour;
 	[HideInInspector]
 	public PointOfInterestBehaviour poiBehaviour;
+	[HideInInspector]
+	public UnconsiousBehaviour unconsiousBehaviour;
 
 	// States
 	public StateAI stateAI;
@@ -100,6 +103,7 @@ public class EnemyAI : MonoBehaviour
 		alliesBehaviour = GetComponent<AllyBehaviour> ();
 		retreatBehaviour = GetComponent<RetreatBehaviour> ();
 		poiBehaviour = GetComponent<PointOfInterestBehaviour> ();
+		unconsiousBehaviour = GetComponent<UnconsiousBehaviour> ();
 
 		commonBehaviour.Init ();
 		chaseBehaviour.Init ();
@@ -108,6 +112,7 @@ public class EnemyAI : MonoBehaviour
 		searchBehaviour.Init ();
 		alliesBehaviour.Init ();
 		retreatBehaviour.Init ();
+		unconsiousBehaviour.Init ();
 		poiBehaviour.Init ();
 
 		if (searchBehaviour)
@@ -189,6 +194,7 @@ public class EnemyAI : MonoBehaviour
 			charStats.aim = false;
 			break;
 		case StateAI.unconsious:
+			// unconsiousBehaviour.Unconious ();
 			charStats.run = false;
 			charStats.aim = false;
 			charStats.hasCover = false;

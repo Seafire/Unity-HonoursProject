@@ -16,6 +16,8 @@ public class Unit : MonoBehaviour
 
 	public EnemyAI sleepTar;
 
+	public CharacterStats charStats;
+
 	public Transform target;
 	float speed = 100;
 	Vector3[] path;
@@ -71,6 +73,11 @@ public class Unit : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	void Start ()
+	{
+		charStats = GetComponent<CharacterStats> ();
 	}
 
 	void Update()
@@ -129,7 +136,7 @@ public class Unit : MonoBehaviour
 		}
 		else if (sleepTar)
 		{
-			if (Input.GetKey (KeyCode.Z))
+			if (Input.GetKey (KeyCode.E))
 			{
 				Debug.Log ("Sleep");
 				sleepTar.charStats.stamina = 0;

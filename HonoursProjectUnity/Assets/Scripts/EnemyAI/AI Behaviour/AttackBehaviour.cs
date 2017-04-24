@@ -328,6 +328,8 @@ public class AttackBehaviour : MonoBehaviour
 
 		if (supPass && morPass)
 		{
+			enemyAI_Main.target.dead = true;
+			Application.LoadLevel (0);
 			enemyAI_Main.AI_State_Attack ();
 		}
 		else
@@ -427,7 +429,6 @@ public class AttackBehaviour : MonoBehaviour
 	{
 		enemyAI_Main.charStats.StopMoving ();
 		// enemyAI_Main.plControl.moveToPosition = false;
-		Debug.Log (enemyAI_Main.plControl.moveToPosition);
 		
 		if (enemyAI_Main.SightRaycasts ())
 		{

@@ -23,7 +23,8 @@ public class CharacterStats : MonoBehaviour
 	public bool aim;
 	public bool shooting;
 	//public GameObject selectCube;
-	private PlayerControl plControl;
+	[HideInInspector]
+	public PlayerControl plControl;
 	private EnemyAI enemyAI;
 
 	private float stTimer = 0;		/* Timer used for stamina */
@@ -100,14 +101,17 @@ public class CharacterStats : MonoBehaviour
 				stamina = 0;
 
 				enemyAI.stateAI = EnemyAI.StateAI.unconsious;
-				enemyAI.alliesBehaviour.AddInterestOnAlliesPOI (enableOnDeath.transform.GetComponent<POI_Base> ());
-				enableOnUnconsious.enabled = true;
+				// enemyAI.alliesBehaviour.AddInterestOnAlliesPOI (enableOnDeath.transform.GetComponent<POI_Base> ());
+				// enableOnUnconsious.enabled = true;
 				// plControl.RagdollCharacter ();
 				plControl.agent.Stop ();
-				plControl.agent.enabled = false;
+				//plControl.agent.enabled = false;
 				unconsious = true;
 				alert = true;
 				alertLevel = 5;
+
+				
+				Debug.Log ("The Enemy is Unconsious: " + unconsious);
 			}
 		}
 		else
@@ -115,21 +119,25 @@ public class CharacterStats : MonoBehaviour
 			stTimer += Time.deltaTime;
 			if (stTimer > 1)
 			{
-				stamina++;
+				stamina += 10;
 				stTimer = 0;
 			}
 
 			if (stamina > 99)
 			{
+				Debug.Log ("Super Awake");
+
 				unconsious = false;
-				Vector3 curPos = enableOnUnconsious.transform.position;
+				Vector3 curPos = transform.position;
 				transform.position = curPos;
 
-				plControl.agent.enabled = true;
+				//plControl.agent.enabled = true;
 				plControl.moveToPosition = false;
+				enemyAI.stateAI = EnemyAI.StateAI.search;
 				// plControl.InitRagdoll ();
 			}
 		}
+
 	}
 
 	public void MoveToPosition (Vector3 position)

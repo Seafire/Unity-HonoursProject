@@ -27,6 +27,8 @@ public class MousePoint : MonoBehaviour
 	private static Vector2 mouseDragStart;
 	private static float clickDragZone = 1.3f;
 
+	public CharacterStats charStats;
+
 	// GUI
 	private float boxWidth;
 	private float boxHeight;
@@ -45,7 +47,7 @@ public class MousePoint : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-
+		//charStats = GetComponent<CharacterStats> ();
 	}
 	
 	// Update is called once per frame
@@ -126,6 +128,9 @@ public class MousePoint : MonoBehaviour
 									DeselectGameObjects();
 								}
 								// add unit to currently selected unit
+								//if (currentlySelectedUnits.)
+								if (hit.collider.gameObject.GetComponent<CharacterStats>().dead == true)
+									return;
 								currentlySelectedUnits.Add(hit.collider.gameObject);
 								GameObject selectObj = hit.collider.transform.FindChild("Selected").gameObject;
 								selectObj.SetActive(true);
