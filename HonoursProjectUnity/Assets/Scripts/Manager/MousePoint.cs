@@ -22,10 +22,10 @@ public class MousePoint : MonoBehaviour
 	public Vector3 rightClickPoint;
 
 	public static bool isUserDragging;
-	private static float timeLimit = 1.0f;
+	private static float timeLimit;
 	private static float timeLeft;
 	private static Vector2 mouseDragStart;
-	private static float clickDragZone = 1.3f;
+	private static float clickDragZone;
 
 	public CharacterStats charStats;
 
@@ -42,12 +42,17 @@ public class MousePoint : MonoBehaviour
 	void Awake()
 	{
 		mouseDownPoint = Vector3.zero;
+		currentlySelectedUnits.Clear ();
+		unitsOnScreen.Clear ();
+		unitsInDrag.Clear ();
 	}
 
 	// Use this for initialization
 	void Start () 
 	{
 		//charStats = GetComponent<CharacterStats> ();
+		clickDragZone = 1.3f;
+		timeLimit = 1.0f;
 	}
 	
 	// Update is called once per frame
